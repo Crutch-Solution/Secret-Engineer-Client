@@ -16,7 +16,7 @@ namespace SCS_Module
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            Box_creator a = new Box_creator();
+            NetBrowser a = new NetBrowser();
             a.ShowDialog();
             //TaskDialog.Show("hui", "her");
             //RibbonPanel p = fff(application);
