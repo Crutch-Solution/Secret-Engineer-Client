@@ -8,7 +8,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.ApplicationServices;
 using System.Reflection;
 
-namespace ClassLibrary1
+namespace SCS_Module
 {
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]

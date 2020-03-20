@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Name>SCS Module</Name>
+    <FullClassName>SCS_Module.Class1</FullClassName>
+    <Text>SCS_Module</Text>
+    <Description>Places the Group at Particular Point</Description>
+    <VisibilityMode>AlwaysVisible</VisibilityMode>
+    <Assembly>SCS Module.dll</Assembly>
+    <AddInId>7c39162b-05d6-4596-a849-7f43ddff06ec</AddInId>
+    <VendorId>ADSK</VendorId>
+    <VendorDescription>Autodesk, Inc, www.autodesk.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>
