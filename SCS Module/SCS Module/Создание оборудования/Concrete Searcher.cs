@@ -10,9 +10,10 @@ using System.Windows.Forms;
 
 namespace SCS_Module
 {
-    public partial class Equipment_selector : Form
+    public partial class Concrete_Searcher : Form
     {
-        public Equipment_selector()
+        public Equipment.VectorPic result = new Equipment.VectorPic();
+        public Concrete_Searcher(int num)
         {
             InitializeComponent();
         }

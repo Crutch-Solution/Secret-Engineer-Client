@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace SCS_Module
 {
-    class EngineerInputMessage
+    public class InterfaceType
     {
-        public RequestType requestType;
-        public string Category, SearchString;
-        public int ModelId;
+        public int id;
+        public string name;
+        public string image;
     }
 }

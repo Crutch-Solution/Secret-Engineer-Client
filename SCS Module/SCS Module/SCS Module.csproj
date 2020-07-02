@@ -52,44 +52,72 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authorization\Request.cs" />
-    <Compile Include="Box_creator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Box_creator.Designer.cs">
-      <DependentUpon>Box_creator.cs</DependentUpon>
-    </Compile>
     <Compile Include="Class1.cs" />
-    <Compile Include="Data operations\EngineerInputMessage.cs" />
-    <Compile Include="Data operations\EngineerOutputMessage.cs" />
-    <Compile Include="Data operations\EqipmentDepartamentWorkerInputMessage.cs" />
-    <Compile Include="Data operations\EqipmentDepartamentWorkerOutputMessage.cs" />
+    <Compile Include="Controllers\BoxController.cs" />
+    <Compile Include="Controllers\ConnectionController.cs" />
+    <Compile Include="Controllers\PlacementController.cs" />
+    <Compile Include="Controllers\StructuralController.cs" />
+    <Compile Include="Data operations\Equipment.cs" />
+    <Compile Include="Data operations\Executive To Server.cs" />
+    <Compile Include="Data operations\InterfaceType.cs" />
     <Compile Include="Data operations\Internet.cs" />
-    <Compile Include="Equipment_selector.cs">
+    <Compile Include="Data operations\RequestType.cs" />
+    <Compile Include="Data operations\Server To Executive.cs" />
+    <Compile Include="interfaceSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Equipment_selector.Designer.cs">
-      <DependentUpon>Equipment_selector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NetBrowser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NetBrowser.Designer.cs">
-      <DependentUpon>NetBrowser.cs</DependentUpon>
+    <Compile Include="interfaceSelector.designer.cs">
+      <DependentUpon>interfaceSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\Category.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Box_creator.resx">
-      <DependentUpon>Box_creator.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Equipment_selector.resx">
-      <DependentUpon>Equipment_selector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NetBrowser.resx">
-      <DependentUpon>NetBrowser.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Главное\RoomCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Главное\RoomCreator.designer.cs">
+      <DependentUpon>RoomCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Главное\Schemes Editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Главное\Schemes Editor.designer.cs">
+      <DependentUpon>Schemes Editor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Главное\Searcher.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Главное\Searcher.designer.cs">
+      <DependentUpon>Searcher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Создание оборудования\AddNewInterface.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Создание оборудования\AddNewInterface.designer.cs">
+      <DependentUpon>AddNewInterface.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Создание оборудования\Concrete Searcher.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Создание оборудования\Concrete Searcher.designer.cs">
+      <DependentUpon>Concrete Searcher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Создание оборудования\CreateInterface.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Создание оборудования\CreateInterface.designer.cs">
+      <DependentUpon>CreateInterface.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Создание оборудования\Creator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Создание оборудования\Creator.designer.cs">
+      <DependentUpon>Creator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Создание оборудования\FamilySearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Создание оборудования\FamilySearch.designer.cs">
+      <DependentUpon>FamilySearch.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SCS Module.addin">
@@ -101,6 +129,35 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="interfaceSelector.resx">
+      <DependentUpon>interfaceSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Главное\RoomCreator.resx">
+      <DependentUpon>RoomCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Главное\Schemes Editor.resx">
+      <DependentUpon>Schemes Editor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Главное\Searcher.resx">
+      <DependentUpon>Searcher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Создание оборудования\AddNewInterface.resx">
+      <DependentUpon>AddNewInterface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Создание оборудования\Concrete Searcher.resx">
+      <DependentUpon>Concrete Searcher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Создание оборудования\CreateInterface.resx">
+      <DependentUpon>CreateInterface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Создание оборудования\Creator.resx">
+      <DependentUpon>Creator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Создание оборудования\FamilySearch.resx">
+      <DependentUpon>FamilySearch.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

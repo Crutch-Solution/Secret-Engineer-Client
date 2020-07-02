@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace SCS_Module
 {
-    class EqipmentDepartamentWorkerInputMessage
+    class ExecutiveToServer
     {
         public RequestType requestType;
-        public string Category, SearchString;
-        public int ModelId;
+        public string searchString;
+        public int equipmentId;
+        public Equipment equipment;
+        public InterfaceType interfaceType;
     }
 }

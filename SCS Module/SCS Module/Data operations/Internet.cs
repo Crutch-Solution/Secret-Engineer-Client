@@ -5,38 +5,43 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using Newtonsoft.Json;
-using System.IO;
+using System.Net;
+
 namespace SCS_Module
 {
-    public enum RequestType
-    {
-        GetCategories, GetByCategory, GetByString, GetWholeModel, UploadModel
-    }
-    public enum ResponseType
-    {
-        GetCategories, GetByCategory, GetByString, GetWholeModel
-    }
     class Internet
     {
-
-        NetworkStream receive_stream, send_stream;
-        byte[] receive_buff = new byte[1000000], send_buff = null;
-        int received;
-        dynamic receive_result;
-        bool send_result;
-        public TcpClient client;
+        static NetworkStream receive_stream, send_stream;
+        static byte[] receive_buff = new byte[10000], send_buff = null;
+        static int received;
+        static dynamic receive_result;
+        static bool send_result;
+        static public TcpClient client=null;
         public Internet(TcpClient cl)
         {
             client = cl;
         }
-        public string receive()
+       public static void Establish()
         {
+         if(client==null)
+                client = new TcpClient(Dns.GetHostEntry(Dns.GetHostName()).AddressList[2].ToString(), 9097);
+        }
+        static public ServerToExecutive receive()
+        {
+            List<byte> list = new List<byte>();
             receive_result = null;
             try
             {
                 receive_stream = client.GetStream();
                 received = receive_stream.Read(receive_buff, 0, receive_buff.Length);
-                receive_result = Encoding.ASCII.GetString(receive_buff, 0, received);
+                while (true)
+                {
+                    for (int i = 0; i < received; i++) list.Add(receive_buff[i]);
+                    if (!receive_stream.DataAvailable) break;
+                    received = receive_stream.Read(receive_buff, 0, receive_buff.Length);
+                }
+                receive_result = Encoding.GetEncoding(1251).GetString(list.ToArray(), 0, list.Count);
+                receive_result = JsonConvert.DeserializeObject<ServerToExecutive > (receive_result);
             }
             catch (Exception ex)
             {
@@ -44,45 +49,13 @@ namespace SCS_Module
             }
             return receive_result;
         }
-        public T receive<T>()
-        {
-            receive_result = null;
-            try
-            {
-                receive_stream = client.GetStream();
-                received = receive_stream.Read(receive_buff, 0, receive_buff.Length);
-                receive_result = Encoding.ASCII.GetString(receive_buff, 0, received);
-                receive_result = JsonConvert.DeserializeObject<T>(receive_result);
-            }
-            catch (Exception ex)
-            {
-                receive_result = null;
-            }
-            return receive_result;
-        }
-        public bool send(string mess)
+        static public bool send(ExecutiveToServer mess)
         {
             send_result = true;
             try
             {
                 send_stream = client.GetStream();
-                send_buff = Encoding.ASCII.GetBytes(mess);
-                send_stream.Write(send_buff, 0, send_buff.Length);
-            }
-            catch (Exception ex)
-            {
-                send_result = false;
-            }
-            return send_result;
-        }
-        public bool send<T>(T mess)
-        {
-            send_result = true;
-            try
-            {
-                send_stream = client.GetStream();
-                string hui = JsonConvert.SerializeObject(mess);
-                send_buff = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(mess));
+                send_buff = Encoding.GetEncoding(1251).GetBytes(JsonConvert.SerializeObject(mess));
                 send_stream.Write(send_buff, 0, send_buff.Length);
             }
             catch (Exception ex)
