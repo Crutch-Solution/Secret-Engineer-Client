@@ -42,8 +42,6 @@ namespace SCS_Module
         //
         static int localSheet = 3;
 
-
-
         static public void DOWN(object sender, MouseEventArgs e)
         {
             switch (Mode)
@@ -455,67 +453,86 @@ namespace SCS_Module
 
         static public void draw(bool isNeed = true)
         {
-            if (isNeed)
-                Schemes_Editor.gr[localSheet].Clear(Color.LightGray);
-
-            foreach (var i in Schemes_Editor.mainWorkList)
-                i.drawStr(Schemes_Editor.gr[localSheet]);
-            foreach (var i in Schemes_Editor.rooms)
-                i.draw(Schemes_Editor.gr[localSheet], localSheet);
-
-            switch (Mode)
+            try
             {
-                case modeStruct.doNothing_NOSCALEMODE:
-                    if (indexToSurround != -1)
-                    {
+                if (isNeed)
+                    Schemes_Editor.gr[localSheet].Clear(Color.LightGray);
+
+                foreach (var i in Schemes_Editor.mainWorkList)
+                    i.drawStr(Schemes_Editor.gr[localSheet]);
+                foreach (var i in Schemes_Editor.rooms)
+                    i.draw(Schemes_Editor.gr[localSheet], localSheet);
+
+                foreach (var i in Schemes_Editor.wires)
+                    i.draw(Schemes_Editor.gr[localSheet], localSheet);
+
+
+                switch (Mode)
+                {
+                    case modeStruct.doNothing_NOSCALEMODE:
+                        if (indexToSurround != -1)
+                        {
+                            if (isRoomSelected)
+                                Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[indexToSurround].locations[localSheet]);
+                            else
+                                Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        }
+                        break;
+
+
+
+
+                    case modeStruct.doNothing_SCALEMODE:
+                        if (scalePoint.X != -1)
+                        {
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
+                        }
+                        foreach (var i in Schemes_Editor.mainWorkList)
+                        {
+                            if (i is inboxes && ((inboxes)i).inbox) continue;
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
+                        }
+                        break;
+
+
+                    case modeStruct.dragShkafnoe:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        if (hasRect)
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Red, rect);
+                        break;
+
+                    case modeStruct.dragShkaf:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        break;
+
+                    case modeStruct.scaleSomething:
                         if (isRoomSelected)
-                            Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[indexToSurround].locations[localSheet]);
+                            Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].X - 1, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].Y - 1, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Width + 2, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Height + 2);
                         else
-                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    }
-                    break;
-
-
-
-
-                case modeStruct.doNothing_SCALEMODE:
-                    if (scalePoint.X != -1)
-                    {
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
                         Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    }
-                    foreach (var i in Schemes_Editor.mainWorkList)
+                        break;
+
+                }
+                //surrounding_no_selected
+                for (int i = 0; i < 4; i++)
+                {
+                    Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
+                    Schemes_Editor.sheets[i].Refresh();
+                }
+
+          /*      List<string> list = new List<string>();
+                list.Add("Условные обозначения");
+                foreach(var i in Schemes_Editor.mainWorkList)
+                {
+                    if (i is inboxes&& ((inboxes)i).strLabel !="не задано")
                     {
-                        if (i is inboxes && ((inboxes)i).inbox) continue;
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
+                        list.Add(((inboxes)i).strLabel+ " - " + Schemes_Editor.mainList.Find(x=>x.id ==i.globalId).description);
                     }
-                    break;
-
-
-                case modeStruct.dragShkafnoe:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    if (hasRect)
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Red, rect);
-                    break;
-
-                case modeStruct.dragShkaf:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    break;
-
-                case modeStruct.scaleSomething:
-                    if (isRoomSelected)
-                        Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].X - 1, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].Y - 1, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Width + 2, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Height + 2);
-                    else
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    break;
-
+                }*/
+                //по условным обозначениям
             }
-            //surrounding_no_selected
-            for (int i = 0; i < 4; i++)
-            {
-                Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
-                Schemes_Editor.sheets[i].Refresh();
-            }
+            catch (Exception exp) { }
         }
     }
 }

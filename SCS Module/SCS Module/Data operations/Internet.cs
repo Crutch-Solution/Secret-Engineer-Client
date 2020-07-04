@@ -23,7 +23,15 @@ namespace SCS_Module
         }
        public static void Establish()
         {
-         if(client==null)
+            // if(client==null)
+        try
+            {
+                client.Close();
+            }
+            catch(Exception EX)
+            {
+
+            }
                 client = new TcpClient(Dns.GetHostEntry(Dns.GetHostName()).AddressList[2].ToString(), 9097);
         }
         static public ServerToExecutive receive()

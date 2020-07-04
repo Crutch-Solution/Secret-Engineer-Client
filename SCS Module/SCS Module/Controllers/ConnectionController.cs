@@ -20,7 +20,8 @@ namespace SCS_Module
         dragShkafnoe,
         moveRoom, 
         buildConnection,
-        editWire
+        editWire, 
+        dragVertex
     }
     public static class ConnectionController
     {
@@ -45,11 +46,22 @@ namespace SCS_Module
         //
         static int localSheet = 1;
        public static Wire targetWire;
+        public static Point pointToSurroundWire;
+
+        public static int pointNumber = -1, wireIndex = -1;
         static public void DOWN(object sender, MouseEventArgs e)
         {
             isRoomSelected = false;
             switch (Mode)
             {
+                case modeConnection.editWire:
+                    if (pointNumber != -1)
+                    {
+                        Schemes_Editor.wires[wireIndex].veryfied[localSheet][pointNumber] = true;
+                        Mode = modeConnection.dragVertex;
+                    }
+
+                    break;
                 case modeConnection.buildConnection:
                     for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                     {
@@ -90,7 +102,7 @@ namespace SCS_Module
                                                 targetWire.secondEquip = (inboxes)Schemes_Editor.mainWorkList[i];
                                             }
                                             ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                            MessageBox.Show("Выберите второе оборудование");
+                                        //    MessageBox.Show("Выберите второе оборудование");
                                         }
 
                                     }
@@ -128,7 +140,72 @@ namespace SCS_Module
                             }
                             else if(Schemes_Editor.mainWorkList[i] is free)
                             {
+                                List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
 
+                                for (int j = 0, jj = 0; j < list.Count; j++, jj++)
+                                    if (((free)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
+                                    {
+                                        list.RemoveAt(jj);
+                                        jj--;
+                                    }
+                                if (list.Count == 0)
+                                {
+                                    MessageBox.Show("Отсутствует свободный интерфейс");
+                                }
+                                else
+                                {
+                                    if (targetWire.first && targetWire.second)
+                                    {
+                                        interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst, targetWire.MyOwnSecond);
+                                        if (sel.ShowDialog() == DialogResult.OK)
+                                        {
+                                            var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                            int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+                                            if (targetWire.MyOwnFirst.interfaceType.id == sel.selectedId)
+                                            {
+                                                targetWire.first = false;
+                                                targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
+                                            }
+                                            else
+                                            {
+                                                targetWire.second = false;
+                                                targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
+                                            }
+                                            ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                            //    MessageBox.Show("Выберите второе оборудование");
+                                        }
+
+                                    }
+                                    else if (targetWire.first)
+                                    {
+                                        interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
+                                        if (sel.ShowDialog() == DialogResult.OK)
+                                        {
+                                            var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                            int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+                                            ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                            targetWire.first = false;
+                                            targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
+                                            Mode = modeConnection.doNothing_NOSCALEMODE;
+
+                                        }
+                                    }
+
+                                    else if (targetWire.second)
+                                    {
+                                        interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
+                                        if (sel.ShowDialog() == DialogResult.OK)
+                                        {
+                                            var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                            int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+                                            ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                            targetWire.second = false;
+                                            targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
+                                            Mode = modeConnection.doNothing_NOSCALEMODE;
+                                            targetWire.createPoints();
+                                        }
+                                    }
+                                }
                             }
                             else
                             {
@@ -271,6 +348,25 @@ namespace SCS_Module
         {
             switch (Mode)
             {
+                case modeConnection.dragVertex:
+                    Schemes_Editor.wires[wireIndex].points[localSheet][pointNumber] = new Point( e.Location.X-5, e.Location.Y-5);
+                    break;
+                case modeConnection.editWire:
+                    pointNumber = -1; wireIndex = -1; double longest = double.MaxValue;
+                    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
+                    {
+                        for (int j = 0; j < Schemes_Editor.wires[i].points[localSheet].Count; j++)
+                        {
+                            if(Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location) < longest && Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location)<20)
+                            {
+                                pointToSurroundWire = Schemes_Editor.wires[i].points[localSheet][j];
+                                pointNumber = j;
+                                wireIndex = i;
+                            }
+                        }
+                    }
+
+                    break;
                 case modeConnection.moveRoom:
                     movable.move(new Point(e.X - Prev.X, e.Y - Prev.Y), localSheet);
                     break;
@@ -519,6 +615,10 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
+                case modeConnection.dragVertex:
+                    Mode = modeConnection.editWire;
+                    Schemes_Editor.wires[wireIndex].rebuild();
+                    break;
                 case modeConnection.moveRoom:
                     Mode = modeConnection.doNothing_NOSCALEMODE;
                     break;
@@ -546,67 +646,82 @@ namespace SCS_Module
 
         static public void draw(bool isNeed = true)
         {
-            if (isNeed)
-                Schemes_Editor.gr[localSheet].Clear(Color.LightGray);
-
-            foreach (var i in Schemes_Editor.mainWorkList)
-                i.drawCon(Schemes_Editor.gr[localSheet]);
-
-            foreach (var i in Schemes_Editor.rooms)
-                i.draw(Schemes_Editor.gr[localSheet], localSheet);
-
-            foreach (var i in Schemes_Editor.wires)
-                i.draw(Schemes_Editor.gr[localSheet], localSheet);
-
-            switch (Mode)
+            try
             {
-                case modeConnection.doNothing_NOSCALEMODE:
-                    if (indexToSurround != -1)
-                    {
-                        if (isRoomSelected)
-                            Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[indexToSurround].locations[localSheet]);
-                        else
-                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    }
-                    break;
+                if (isNeed)
+                    Schemes_Editor.gr[localSheet].Clear(Color.LightGray);
 
+                foreach (var i in Schemes_Editor.mainWorkList)
+                    i.drawCon(Schemes_Editor.gr[localSheet]);
 
+                foreach (var i in Schemes_Editor.rooms)
+                    i.draw(Schemes_Editor.gr[localSheet], localSheet);
 
-
-                case modeConnection.doNothing_SCALEMODE:
-                    if (scalePoint.X != -1)
-                    {
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    }
-                    foreach (var i in Schemes_Editor.mainWorkList)
-                    {
-                        if (i is inboxes && ((inboxes)i).inbox)
-                            continue;
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
-                    }
-                    break;
-
-
-
-                case modeConnection.dragShkaf:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    break;
-
-                case modeConnection.scaleSomething:
-                    if (isRoomSelected)
-                        Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].X - 1, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].Y - 1, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Width + 2, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Height + 2);
+                foreach (var i in Schemes_Editor.wires)
+                {
+                    if (Mode == modeConnection.dragVertex)
+                        i.draw(Schemes_Editor.gr[localSheet], localSheet, false);
                     else
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    break;
+                        i.draw(Schemes_Editor.gr[localSheet], localSheet);
+                }
 
+                switch (Mode)
+                {
+                    case modeConnection.editWire:
+                        if (pointNumber != -1)
+                        {
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), pointToSurroundWire.X - 5, pointToSurroundWire.Y - 5, 10, 10);
+                        }
+                        break;
+                    case modeConnection.doNothing_NOSCALEMODE:
+                        if (indexToSurround != -1)
+                        {
+                            if (isRoomSelected)
+                                Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[indexToSurround].locations[localSheet]);
+                            else
+                                Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        }
+                        break;
+
+
+
+
+                    case modeConnection.doNothing_SCALEMODE:
+                        if (scalePoint.X != -1)
+                        {
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
+                        }
+                        foreach (var i in Schemes_Editor.mainWorkList)
+                        {
+                            if (i is inboxes && ((inboxes)i).inbox)
+                                continue;
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
+                        }
+                        break;
+
+
+
+                    case modeConnection.dragShkaf:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        break;
+
+                    case modeConnection.scaleSomething:
+                        if (isRoomSelected)
+                            Schemes_Editor.gr[localSheet].DrawRectangle(Pens.Blue, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].X - 1, Schemes_Editor.rooms[moveTargetIndex].locations[localSheet].Y - 1, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Width + 2, Schemes_Editor.rooms[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Height + 2);
+                        else
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
+                        break;
+
+                }
+                //surrounding_no_selected
+                for (int i = 0; i < 4; i++)
+                {
+                    Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
+                    Schemes_Editor.sheets[i].Refresh();
+                }
             }
-            //surrounding_no_selected
-            for (int i = 0; i < 4; i++)
-            {
-                Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
-                Schemes_Editor.sheets[i].Refresh();
-            }
+            catch (Exception exp) { }
         }
     }
 }

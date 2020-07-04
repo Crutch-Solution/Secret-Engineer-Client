@@ -41,68 +41,72 @@ namespace SCS_Module
        static int localSheet = 2;
         static public void draw(bool isNeed = true)
         {
-            if (isNeed)
+            try
+            {
+                if (isNeed)
                     Schemes_Editor.gr[localSheet].Clear(Color.LightGray);
 
-            foreach (var i in Schemes_Editor.mainWorkList)
-                i.drawBox(Schemes_Editor.gr[localSheet]);
+                foreach (var i in Schemes_Editor.mainWorkList)
+                    i.drawBox(Schemes_Editor.gr[localSheet]);
 
 
 
-            switch (Mode)
-            {
-                case modeShkaf.doNothing_NOSCALEMODE:
-                    if (indexToSurround != -1)
-                    {
-                        //if (Schemes_Editor.mainWorkList[indexToSurround] is wire_s)
-                        //{
+                switch (Mode)
+                {
+                    case modeShkaf.doNothing_NOSCALEMODE:
+                        if (indexToSurround != -1)
+                        {
+                            //if (Schemes_Editor.mainWorkList[indexToSurround] is wire_s)
+                            //{
 
-                        //}
-                        //else
-                        //{
-                        //    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                        //}
-                    }
-                    break;
-
-
+                            //}
+                            //else
+                            //{
+                            //    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                            //}
+                        }
+                        break;
 
 
-                case modeShkaf.doNothing_SCALEMODE:
-                    if (scalePoint.X != -1)
-                    {
+
+
+                    case modeShkaf.doNothing_SCALEMODE:
+                        if (scalePoint.X != -1)
+                        {
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
+                        }
+                        foreach (var i in Schemes_Editor.mainWorkList)
+                        {
+                            if (i is inboxes && ((inboxes)i).inbox) continue;
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
+                        }
+                        break;
+
+
+                    case modeShkaf.dragShkafnoe:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        if (hasRect)
+                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Red, rect);
+                        break;
+
+                    case modeShkaf.dragShkaf:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
+                        break;
+
+                    case modeShkaf.scaleSomething:
+                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
                         Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    }
-                    foreach (var i in Schemes_Editor.mainWorkList)
-                    {
-                        if (i is inboxes && ((inboxes)i).inbox) continue;
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
-                    }
-                    break;
+                        break;
 
-
-                case modeShkaf.dragShkafnoe:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    if (hasRect)
-                        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Red, rect);
-                    break;
-
-                case modeShkaf.dragShkaf:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[indexToSurround].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[indexToSurround].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    break;
-
-                case modeShkaf.scaleSomething:
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].X - 1, Schemes_Editor.mainWorkList[moveTargetIndex].locations[Schemes_Editor.sheetIndex].Y - 1, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].X + 2, Schemes_Editor.mainWorkList[moveTargetIndex].scales[Schemes_Editor.sheetIndex].Y + 2);
-                    Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), scalePoint.X - 5, scalePoint.Y - 5, 10, 10);
-                    break;
-
+                }
+                //surrounding_no_selected
+                for (int i = 0; i < 4; i++)
+                {
+                    Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
+                    Schemes_Editor.sheets[i].Refresh();
+                }
             }
-            //surrounding_no_selected
-            for (int i = 0; i < 4; i++)
-            {
-                Schemes_Editor.sheets[i].Image = Schemes_Editor.bitmaps[i];
-                Schemes_Editor.sheets[i].Refresh();
-            }
+            catch (Exception exp) { }
         }
 
 
@@ -135,7 +139,7 @@ namespace SCS_Module
                     break;
                 case "Копировать":
 
-                    //Mode = modeShkaf.constantMove;
+                    father.copy(element.globalId, element);
                     break;
                 case "Удалить":
                     break;
@@ -173,10 +177,13 @@ namespace SCS_Module
                             }
 
 
+
                             ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler) });
                             menushka.Show(father.pictureBox1, e.Location);
                             break;
-                            break;
+
+
+
                     }
                     break;
                    
@@ -193,6 +200,7 @@ namespace SCS_Module
                             Mode = modeShkaf.doNothing_NOSCALEMODE;
                             break;
                         case modeShkaf.doNothing_NOSCALEMODE: //
+                            movable = null;
                             for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                             {
                                 if (Schemes_Editor.mainWorkList[i].inside(e.Location, 2))
@@ -202,6 +210,7 @@ namespace SCS_Module
                                         Prev = new Point(e.Location.X - ((inboxes)Schemes_Editor.mainWorkList[i]).locations[2].X, e.Location.Y - ((inboxes)Schemes_Editor.mainWorkList[i]).locations[2].Y);
                                         Mode = modeShkaf.dragShkafnoe;
                                         hasRect = false;
+                                        movable = Schemes_Editor.mainWorkList[i];
                                         foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
                                         {
                                             int pos = j.equipInside.IndexOf(j.equipInside.Find(x => x.localID == movable.localID));
@@ -216,10 +225,11 @@ namespace SCS_Module
                                     }
                                     if (Schemes_Editor.mainWorkList[i] is boxes)
                                     {
+                                        movable = Schemes_Editor.mainWorkList[i];
                                         Prev = new Point(e.Location.X - ((boxes)Schemes_Editor.mainWorkList[i]).locations[2].X, e.Location.Y - ((boxes)Schemes_Editor.mainWorkList[i]).locations[2].Y);
                                         Mode = modeShkaf.dragShkaf;
                                     }
-                                    movable = Schemes_Editor.mainWorkList[i];
+              
                                     break;
                                 }
                             }

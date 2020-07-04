@@ -19,8 +19,9 @@ namespace SCS_Module
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            new Internet(new TcpClient("192.168.0.104", 9097));
-            Document doc = commandData.Application.ActiveUIDocument.Document;
+            Internet.Establish();
+            (new Schemes_Editor(commandData)).ShowDialog();
+        /*    Document doc = commandData.Application.ActiveUIDocument.Document;
             OpenFileDialog file = new OpenFileDialog();
             Autodesk.Revit.DB.Family family = null;
 
@@ -73,7 +74,8 @@ namespace SCS_Module
             //TaskDialog.Show("hui", "her");
             //RibbonPanel p = fff(application);
             //PushButton but = p.AddItem(new PushButtonData("hui", "name", Assembly.GetExecutingAssembly().Location, "hui.comm")) as PushButton;
-            return Result.Succeeded;
+    */      
+    return Result.Succeeded;
         }
         public Result OnStartup(UIControlledApplication application)
         {
