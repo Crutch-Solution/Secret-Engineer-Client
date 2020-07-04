@@ -175,8 +175,16 @@ namespace SCS_Module
                     }
 
 
-                    int id = RevitProvider.createInstance()
-                    mainWorkList.Add(new boxes() { localID = id, globalId = searcher.result.id, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = real.ToArray() });
+                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    bool hasFamily = id != -1;
+                    Random r = new Random();
+                    if (!hasFamily)
+                    {
+                        id = -1 * r.Next(0, int.MaxValue);
+                        while (mainWorkList.Exists(x => x.localID == id))
+                            id = -1 * r.Next(0, int.MaxValue);
+                    }
+                    mainWorkList.Add(new boxes() { hasFamily = hasFamily, localID = id, globalId = searcher.result.id, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = real.ToArray() });
                     List<drawer> sortedList = new List<drawer>();
                     sortedList.AddRange(mainWorkList.FindAll(x => x is boxes));
                     sortedList.AddRange(mainWorkList.FindAll(x => !(x is boxes)));
@@ -209,39 +217,51 @@ namespace SCS_Module
                         searcher.result.compatibilities[i].isMama = true;
 
                     ////////////////
-               
-
-                        mainList.RemoveAll(x => x.id == searcher.result.id);
-                        mainList.Add(searcher.result);
 
 
-                        //calculate proportions for 10 000
-                        List<Equipment.Point> fake = new List<Equipment.Point>();
-                        if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                        else fake.Add(null);
+                    mainList.RemoveAll(x => x.id == searcher.result.id);
+                    mainList.Add(searcher.result);
 
-                        List<System.Drawing.Point> real = new List<System.Drawing.Point>();
-                        for (int i = 0; i < 4; i++)
-                        {
-                            if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
-                            float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                            real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
-                        }
 
-                        mainWorkList.Add(new inboxes()
-                        {
-                            numberOfUnits = Convert.ToInt32(searcher.result.properties["Занимаемых юнитов (шт)"]),
-                            localID = id,
-                            globalId = searcher.result.id,
-                            locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
-                            scales = real.ToArray()
-                        });
+                    //calculate proportions for 10 000
+                    List<Equipment.Point> fake = new List<Equipment.Point>();
+                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
+                    else fake.Add(null);
+
+                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
+                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
+                    }
+
+
+                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    bool hasFamily = id != -1;
+                    Random r = new Random();
+                    if (!hasFamily)
+                    {
+                        id = -1 * r.Next(0, int.MaxValue);
+                        while (mainWorkList.Exists(x => x.localID == id))
+                            id = -1 * r.Next(0, int.MaxValue);
+                    }
+
+                    mainWorkList.Add(new inboxes()
+                    {
+                        hasFamily = hasFamily,
+                        numberOfUnits = Convert.ToInt32(searcher.result.properties["Занимаемых юнитов (шт)"]),
+                        localID = id,
+                        globalId = searcher.result.id,
+                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
+                        scales = real.ToArray()
+                    });
 
 
 
@@ -292,40 +312,49 @@ namespace SCS_Module
                         }
 
                     ////
-                    int id = -1;
-                    Transaction tr = null;
-                  
 
 
 
-                        mainList.RemoveAll(x => x.id == searcher.result.id);
-                        mainList.Add(searcher.result);
-                        //calculate proportions for 10 000
-                        List<Equipment.Point> fake = new List<Equipment.Point>();
-                        if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                        else fake.Add(null);
 
-                        List<System.Drawing.Point> real = new List<System.Drawing.Point>();
-                        for (int i = 0; i < 4; i++)
-                        {
-                            if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
-                            float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                            real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
-                        }
+                    mainList.RemoveAll(x => x.id == searcher.result.id);
+                    mainList.Add(searcher.result);
+                    //calculate proportions for 10 000
+                    List<Equipment.Point> fake = new List<Equipment.Point>();
+                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
+                    else fake.Add(null);
 
-                        mainWorkList.Add(new free()
-                        {
-                            localID = id,
-                            globalId = searcher.result.id,
-                            locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
-                            scales = real.ToArray()
-                        });
+                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
+                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
+                    }
+
+                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    bool hasFamily = id != -1;
+                    Random r = new Random();
+                    if (!hasFamily)
+                    {
+                        id = -1 * r.Next(0, int.MaxValue);
+                        while (mainWorkList.Exists(x => x.localID == id))
+                            id = -1 * r.Next(0, int.MaxValue);
+                    }
+
+                    mainWorkList.Add(new free()
+                    {
+                        hasFamily = hasFamily,
+                        localID = id,
+                        globalId = searcher.result.id,
+                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
+                        scales = real.ToArray()
+                    });
                 }
                 foreach (var i in mainWorkList)
                     i.drawBox(gr[sheetIndex]);
