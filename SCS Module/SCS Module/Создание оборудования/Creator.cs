@@ -637,12 +637,12 @@ namespace SCS_Module
                 foreach (var i in vectorImagesBuff[num].polyLines)
                     for (int j = 0; j < i.Count; j++)
                         i[j].divide(proportion);
-                foreach (var i in vectorImagesBuff[num].arcs)
-                    i.divide(proportion);
+                //foreach (var i in vectorImagesBuff[num].arcs)
+                //    i.divide(proportion);
                 foreach (var i in vectorImagesBuff[num].circles)
                     i.divide(proportion);
-                foreach (var i in vectorImagesBuff[num].hatching)
-                    i.divide(proportion);
+                //foreach (var i in vectorImagesBuff[num].hatching)
+                //    i.divide(proportion);
                 //second alignment
                 calculateBorders(ref LeftUpperX, ref LeftUpperY, ref RightLowerX, ref RightLowerY, vectorImagesBuff[num], true);
                 proportion = 1;
@@ -662,12 +662,12 @@ namespace SCS_Module
                     foreach (var i in vectorImagesBuff[num].polyLines)
                         for (int j = 0; j < i.Count; j++)
                             i[j].divide(proportion);
-                    foreach (var i in vectorImagesBuff[num].arcs)
-                        i.divide(proportion);
+                    //foreach (var i in vectorImagesBuff[num].arcs)
+                    //    i.divide(proportion);
                     foreach (var i in vectorImagesBuff[num].circles)
                         i.divide(proportion);
-                    foreach (var i in vectorImagesBuff[num].hatching)
-                        i.divide(proportion);
+                    //foreach (var i in vectorImagesBuff[num].hatching)
+                    //    i.divide(proportion);
                 }
 
 
@@ -682,10 +682,10 @@ namespace SCS_Module
                     yOffset = (int)(BoxHeight - height) / 2+1;
 
 
-                foreach (var i in vectorImagesBuff[num].hatching)
-                {
+                //foreach (var i in vectorImagesBuff[num].hatching)
+                //{
 
-                }
+                //}
                 foreach (var i in vectorImagesBuff[num].polyLines)
                 {
                     List<Point> list1 = new List<Point>();
@@ -698,13 +698,13 @@ namespace SCS_Module
                     gg.DrawEllipse(Pens.Black, (float)i.center.X + xOffset - (float)i.radius, (float)i.center.Y + yOffset - (float)i.radius, (float)i.radius * 2, (float)i.radius * 2);
                 }
                 int count=0;
-                foreach (var i in vectorImagesBuff[num].arcs)
-                {
-                    //gg.DrawLine(Pens.Green, 0, 0, (float)i.UpperLeft.X + xOffset, (float)i.UpperLeft.Y + yOffset);
-                    gg.DrawArc(Pens.Red, (float)i.UpperLeft.X + xOffset, (float)i.UpperLeft.Y + yOffset, (float)i.radius * 2, (float)i.radius * 2,360- (float)i.EndAngle, Math.Abs((float)i.EndAngle-(float)i.startAngle));
-                    //count++;
-                    //if (count == 1) break;
-                }
+                //foreach (var i in vectorImagesBuff[num].arcs)
+                //{
+                //    //gg.DrawLine(Pens.Green, 0, 0, (float)i.UpperLeft.X + xOffset, (float)i.UpperLeft.Y + yOffset);
+                //    gg.DrawArc(Pens.Red, (float)i.UpperLeft.X + xOffset, (float)i.UpperLeft.Y + yOffset, (float)i.radius * 2, (float)i.radius * 2,360- (float)i.EndAngle, Math.Abs((float)i.EndAngle-(float)i.startAngle));
+                //    //count++;
+                //    //if (count == 1) break;
+                //}
                 for_plans[num].Image = bit;
                // bit.Save("hui.png");
             }
@@ -762,8 +762,8 @@ namespace SCS_Module
                     image img = JsonConvert.DeserializeObject<image> (File.ReadAllText(file.FileName));
                     vectorImages[num] = new Equipment.VectorPic();
                     vectorImages[num].polyLines = new List<List<Equipment.Point>>();
-                    vectorImages[num].hatching = new List<Equipment.Point>();
-                    vectorImages[num].arcs = new List<arc>();
+                    //vectorImages[num].hatching = new List<Equipment.Point>();
+                    //vectorImages[num].arcs = new List<arc>();
                     vectorImages[num].circles = new List<circle>();
 
                     foreach (var i in img.plines)
@@ -772,10 +772,10 @@ namespace SCS_Module
                         foreach (var j in i.list)
                             vectorImages[num].polyLines[vectorImages[num].polyLines.Count - 1].Add(new Equipment.Point() { X = Convert.ToSingle(j.X), Y = Convert.ToSingle(j.Y) });
                     }
-                    foreach (var i in img.arcs)
-                    {
-                        vectorImages[num].arcs.Add(new arc() { EndAngle = (i.EndAngle/Math.PI)*180, radius=i.radius, startAngle=(i.startAngle / Math.PI) * 180, UpperLeft = i.UpperLeft, radiusX = i.radius, radiusY = i.radius });
-                    }
+                    //foreach (var i in img.arcs)
+                    //{
+                    //    vectorImages[num].arcs.Add(new arc() { EndAngle = (i.EndAngle/Math.PI)*180, radius=i.radius, startAngle=(i.startAngle / Math.PI) * 180, UpperLeft = i.UpperLeft, radiusX = i.radius, radiusY = i.radius });
+                    //}
                     foreach (var i in img.circles)
                     {
                         vectorImages[num].circles.Add(new circle() { center = i.center, radius=i.radius, radiusX = i.radiusX, radiusY = i.radiusY });
@@ -810,11 +810,11 @@ namespace SCS_Module
                             i[j].X -= (float)LeftUpperX;
                             i[j].Y = (float)LeftUpperY- i[j].Y;
                         }
-                    foreach (var i in vectorImages[num].arcs)
-                    {
-                        i.UpperLeft.X -= (float)LeftUpperX;
-                        i.UpperLeft.Y = (float)LeftUpperY - i.UpperLeft.Y;
-                    }
+                    //foreach (var i in vectorImages[num].arcs)
+                    //{
+                    //    i.UpperLeft.X -= (float)LeftUpperX;
+                    //    i.UpperLeft.Y = (float)LeftUpperY - i.UpperLeft.Y;
+                    //}
                     foreach (var i in vectorImages[num].circles)
                     {
                         i.center.X -= (float)LeftUpperX;
@@ -839,12 +839,12 @@ namespace SCS_Module
         {
             if (normalized)
             {
-                if (vectorpic.arcs.Count != 0)
-                {
-                    LeftUpperX = vectorpic.arcs[0].UpperLeft.X; LeftUpperY = vectorpic.arcs[0].UpperLeft.Y;
-                    RightLowerX = vectorpic.arcs[0].UpperLeft.X; RightLowerY = vectorpic.arcs[0].UpperLeft.Y;
-                }
-                else if (vectorpic.polyLines.Count != 0)
+                //if (vectorpic.arcs.Count != 0)
+                //{
+                //    LeftUpperX = vectorpic.arcs[0].UpperLeft.X; LeftUpperY = vectorpic.arcs[0].UpperLeft.Y;
+                //    RightLowerX = vectorpic.arcs[0].UpperLeft.X; RightLowerY = vectorpic.arcs[0].UpperLeft.Y;
+                //}
+                if (vectorpic.polyLines.Count != 0)
                 {
                     LeftUpperX = vectorpic.polyLines[0][0].X; LeftUpperY = vectorpic.polyLines[0][0].Y;
                     RightLowerX = vectorpic.polyLines[0][0].X; RightLowerY = vectorpic.polyLines[0][0].Y;
@@ -885,29 +885,29 @@ namespace SCS_Module
                     if (i.center.Y + i.radius > RightLowerY)
                         RightLowerY = i.center.Y + i.radius;
                 }
-                foreach (var i in vectorpic.arcs)
-                {
-                    if (i.UpperLeft.X < LeftUpperX)
-                        LeftUpperX = i.UpperLeft.X;
-                    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
-                        RightLowerX = i.UpperLeft.X + i.radius * 2;
+                //foreach (var i in vectorpic.arcs)
+                //{
+                //    if (i.UpperLeft.X < LeftUpperX)
+                //        LeftUpperX = i.UpperLeft.X;
+                //    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
+                //        RightLowerX = i.UpperLeft.X + i.radius * 2;
 
-                    if (i.UpperLeft.Y < LeftUpperY)
-                        LeftUpperY = i.UpperLeft.Y;
-                    if (i.UpperLeft.Y + i.radius * 2 > RightLowerY)
-                        RightLowerY = i.UpperLeft.Y + i.radius * 2;
-                }
+                //    if (i.UpperLeft.Y < LeftUpperY)
+                //        LeftUpperY = i.UpperLeft.Y;
+                //    if (i.UpperLeft.Y + i.radius * 2 > RightLowerY)
+                //        RightLowerY = i.UpperLeft.Y + i.radius * 2;
+                //}
                 //LeftUpperX--; LeftUpperY--;
                 //RightLowerX++; RightLowerY++;
             }
             else
             {
-                if (vectorpic.arcs.Count != 0)
-                {
-                    LeftUpperX = vectorpic.arcs[0].UpperLeft.X; LeftUpperY = vectorpic.arcs[0].UpperLeft.Y;
-                    RightLowerX = vectorpic.arcs[0].UpperLeft.X; RightLowerY = vectorpic.arcs[0].UpperLeft.Y;
-                }
-                else if (vectorpic.polyLines.Count != 0)
+                //if (vectorpic.arcs.Count != 0)
+                //{
+                //    LeftUpperX = vectorpic.arcs[0].UpperLeft.X; LeftUpperY = vectorpic.arcs[0].UpperLeft.Y;
+                //    RightLowerX = vectorpic.arcs[0].UpperLeft.X; RightLowerY = vectorpic.arcs[0].UpperLeft.Y;
+                //}
+                if (vectorpic.polyLines.Count != 0)
                 {
                     LeftUpperX = vectorpic.polyLines[0][0].X; LeftUpperY = vectorpic.polyLines[0][0].Y;
                     RightLowerX = vectorpic.polyLines[0][0].X; RightLowerY = vectorpic.polyLines[0][0].Y;
@@ -948,18 +948,18 @@ namespace SCS_Module
                     if (i.center.Y - i.radius < RightLowerY)
                         RightLowerY = i.center.Y - i.radius;
                 }
-                foreach (var i in vectorpic.arcs)
-                {
-                    if (i.UpperLeft.X < LeftUpperX)
-                        LeftUpperX = i.UpperLeft.X;
-                    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
-                        RightLowerX = i.UpperLeft.X + i.radius * 2;
+                //foreach (var i in vectorpic.arcs)
+                //{
+                //    if (i.UpperLeft.X < LeftUpperX)
+                //        LeftUpperX = i.UpperLeft.X;
+                //    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
+                //        RightLowerX = i.UpperLeft.X + i.radius * 2;
 
-                    if (i.UpperLeft.Y > LeftUpperY)
-                        LeftUpperY = i.UpperLeft.Y;
-                    if (i.UpperLeft.Y - i.radius * 2 < RightLowerY)
-                        RightLowerY = i.UpperLeft.Y - i.radius * 2;
-                }
+                //    if (i.UpperLeft.Y > LeftUpperY)
+                //        LeftUpperY = i.UpperLeft.Y;
+                //    if (i.UpperLeft.Y - i.radius * 2 < RightLowerY)
+                //        RightLowerY = i.UpperLeft.Y - i.radius * 2;
+                //}
                 //LeftUpperX--; LeftUpperY++;
                 //    RightLowerX++; RightLowerY--;
             }

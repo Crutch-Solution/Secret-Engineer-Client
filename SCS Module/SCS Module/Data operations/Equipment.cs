@@ -103,9 +103,9 @@ namespace SCS_Module
         public class VectorPic
         {
             public List<List<Point>> polyLines;
-            public List<Point> hatching;
+            //public List<Point> hatching;
             public List<circle> circles;
-            public List<arc> arcs;
+            //public List<arc> arcs;
             public VectorPic copy()
             {
                 VectorPic cop = new VectorPic();
@@ -118,26 +118,26 @@ namespace SCS_Module
                         cop.polyLines[cop.polyLines.Count - 1].Add(j.copy());
                     }
                 }
-                cop.hatching = new List<Point>();
-                foreach (var i in hatching) cop.hatching.Add(i.copy());
+                //cop.hatching = new List<Point>();
+                //foreach (var i in hatching) cop.hatching.Add(i.copy());
 
                     cop.circles = new List<circle>();
                 foreach (var i in circles)
                     cop.circles.Add(i.copy());
-                cop.arcs = new List<arc>();
-                foreach (var i in arcs)
-                    cop.arcs.Add(i.copy());
+                //cop.arcs = new List<arc>();
+                //foreach (var i in arcs)
+                //    cop.arcs.Add(i.copy());
                 return cop;
             }
             public Point GetProp()
             {
                 double LeftUpperX=0, LeftUpperY = 0, RightLowerX = 0, RightLowerY = 0;
-                if (arcs.Count != 0)
-                {
-                    LeftUpperX = arcs[0].UpperLeft.X; LeftUpperY = arcs[0].UpperLeft.Y;
-                    RightLowerX = arcs[0].UpperLeft.X; RightLowerY = arcs[0].UpperLeft.Y;
-                }
-                else if (polyLines.Count != 0)
+                //if (arcs.Count != 0)
+                //{
+                //    LeftUpperX = arcs[0].UpperLeft.X; LeftUpperY = arcs[0].UpperLeft.Y;
+                //    RightLowerX = arcs[0].UpperLeft.X; RightLowerY = arcs[0].UpperLeft.Y;
+                //}
+                if (polyLines.Count != 0)
                 {
                     LeftUpperX = polyLines[0][0].X; LeftUpperY = polyLines[0][0].Y;
                     RightLowerX = polyLines[0][0].X; RightLowerY = polyLines[0][0].Y;
@@ -174,18 +174,18 @@ namespace SCS_Module
                     if (i.center.Y + i.radius > RightLowerY)
                         RightLowerY = i.center.Y + i.radius;
                 }
-                foreach (var i in arcs)
-                {
-                    if (i.UpperLeft.X < LeftUpperX)
-                        LeftUpperX = i.UpperLeft.X;
-                    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
-                        RightLowerX = i.UpperLeft.X + i.radius * 2;
+                //foreach (var i in arcs)
+                //{
+                //    if (i.UpperLeft.X < LeftUpperX)
+                //        LeftUpperX = i.UpperLeft.X;
+                //    if (i.UpperLeft.X + i.radius * 2 > RightLowerX)
+                //        RightLowerX = i.UpperLeft.X + i.radius * 2;
 
-                    if (i.UpperLeft.Y < LeftUpperY)
-                        LeftUpperY = i.UpperLeft.Y;
-                    if (i.UpperLeft.Y + i.radius * 2 > RightLowerY)
-                        RightLowerY = i.UpperLeft.Y + i.radius * 2;
-                }
+                //    if (i.UpperLeft.Y < LeftUpperY)
+                //        LeftUpperY = i.UpperLeft.Y;
+                //    if (i.UpperLeft.Y + i.radius * 2 > RightLowerY)
+                //        RightLowerY = i.UpperLeft.Y + i.radius * 2;
+                //}
                 return new Point() { X = (float)RightLowerX - (float)LeftUpperX, Y = (float)RightLowerY - (float)LeftUpperY };
             }
             public void divide(float x, float y)
@@ -194,15 +194,15 @@ namespace SCS_Module
                     foreach (var i in polyLines)
                         foreach (var j in i)
                             j.divide(x,y);
-                if (hatching != null)
-                    foreach (var i in hatching)
-                        i.divide(x, y);
+                //if (hatching != null)
+                //    foreach (var i in hatching)
+                //        i.divide(x, y);
                 if (circles != null)
                     foreach (var i in circles)
                         i.divide(x, y);
-                if (arcs != null)
-                    foreach (var i in arcs)
-                        i.divide(x, y);
+                //if (arcs != null)
+                //    foreach (var i in arcs)
+                //        i.divide(x, y);
             }
         }
         public class Point
@@ -684,35 +684,35 @@ namespace SCS_Module
     {
         public List<dot> list;
     }
-    public class arc
-    {
-        public dot UpperLeft;
-        public double radius;
-        public double radiusX, radiusY;
-        public double startAngle, EndAngle;
-        public void divide(float a)
-        {
-            UpperLeft.X /= a;
-            UpperLeft.Y /= a;
-            radiusX /= a;
-            radiusY /= a;
-            radius /= a;
-        }
-        public void divide(float a, float b)
-        {
-            UpperLeft.X /= a;
-            UpperLeft.Y /= b;
-            radiusX /= a;
-            radiusY /= b;
-            if (radiusX > radiusY) radius = radiusX;
-            else radius = radiusY;
-        }
-        public arc copy()
-        {
-            arc newa = new arc() { EndAngle = EndAngle, radiusX = radiusX, radiusY = radiusY, radius = radius, startAngle = startAngle, UpperLeft = UpperLeft.copy() };
-            return newa;
-        }
-    }
+    //public class arc
+    //{
+    //    public dot UpperLeft;
+    //    public double radius;
+    //    public double radiusX, radiusY;
+    //    public double startAngle, EndAngle;
+    //    public void divide(float a)
+    //    {
+    //        UpperLeft.X /= a;
+    //        UpperLeft.Y /= a;
+    //        radiusX /= a;
+    //        radiusY /= a;
+    //        radius /= a;
+    //    }
+    //    public void divide(float a, float b)
+    //    {
+    //        UpperLeft.X /= a;
+    //        UpperLeft.Y /= b;
+    //        radiusX /= a;
+    //        radiusY /= b;
+    //        if (radiusX > radiusY) radius = radiusX;
+    //        else radius = radiusY;
+    //    }
+    //    public arc copy()
+    //    {
+    //        arc newa = new arc() { EndAngle = EndAngle, radiusX = radiusX, radiusY = radiusY, radius = radius, startAngle = startAngle, UpperLeft = UpperLeft.copy() };
+    //        return newa;
+    //    }
+    //}
     public class circle
     {
         public dot center;
@@ -754,7 +754,7 @@ namespace SCS_Module
     public class image
     {
         public List<circle> circles = new List<circle>();
-        public List<arc> arcs = new List<arc>();
+        //public List<arc> arcs = new List<arc>();
         public List<pline> plines = new List<pline>();
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="classes\draw.cs" />
     <Compile Include="classes\free.cs" />
     <Compile Include="classes\inbox.cs" />
+    <Compile Include="classes\RevitProvider.cs" />
     <Compile Include="classes\Room.cs" />
     <Compile Include="classes\Vinoska.cs" />
     <Compile Include="classes\Wire.cs" />

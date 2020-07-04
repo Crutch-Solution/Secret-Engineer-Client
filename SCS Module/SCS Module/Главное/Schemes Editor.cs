@@ -1,14 +1,12 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+﻿
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+
 using System.Drawing;
 using System.IO;
-using System.Linq;
+
 using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace SCS_Module
@@ -16,55 +14,12 @@ namespace SCS_Module
 
     public partial class Schemes_Editor : System.Windows.Forms.Form
     {
-        ExternalCommandData commandData;
-        public Schemes_Editor(ExternalCommandData commandData)
+
+        public Schemes_Editor()
         {
             InitializeComponent();
-            string a = "";
-            Transaction tr = null;
-            try
-            {
-                Document doc = commandData.Application.ActiveUIDocument.Document;
-                tr = new Transaction(doc);
-                tr.Start("My Super trans");
-                for (int i = 0; i < mainWorkList.Count; i++)
-                {
 
 
-                    Element el = doc.GetElement(new ElementId(mainWorkList[i].localID));
-                    if (el == null)
-                    {
-                        foreach (var j in mainWorkList)
-                            if (j is boxes)
-                            {
-                                ((boxes)j).equipInside.RemoveAll(x => x.localID == mainWorkList[i].localID);
-                            }
-                        wires.RemoveAll(x => (x.firstEquip != null && x.firstEquip.localID == mainWorkList[i].localID)
-                        || (x.secondEquip != null && x.secondEquip.localID == mainWorkList[i].localID));
-
-                        a += $"Было уничтожено оборудование {mainList.Find(x => x.id == mainWorkList[i].globalId).name}\n";
-                        mainWorkList.RemoveAt(i);
-                        i--;
-                    }
-                }
-                tr.Commit();
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    tr.Commit();
-                }
-                catch (Exception exxx)
-                {
-
-                }
-            }
-
-            if (a != "") MessageBox.Show(a);
-
-
-            this.commandData = commandData;
 
             pictureBox3.MouseDown += new System.Windows.Forms.MouseEventHandler(PlacementController.DOWN);
             pictureBox3.MouseMove += new System.Windows.Forms.MouseEventHandler(PlacementController.MOVE);
@@ -117,65 +72,7 @@ namespace SCS_Module
             if (elem != null)
             {
                 var target = mainList.Find(x => x.id == elem.globalId);
-                Transaction tr = null;
-                try
-                {
-                    File.Create(target.name + ".rfa").Close();
-                    File.WriteAllBytes(target.name + ".rfa", target.bytedFile);
-
-                    Document doc = commandData.Application.ActiveUIDocument.Document;
-                    Autodesk.Revit.DB.Family family = null;
-
-                    tr = new Transaction(doc);
-                    tr.Start("My Super trans");
-                    //попытка найти существующее семейство
-                    var search = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-                    bool good = false;
-                    foreach (FamilySymbol symbq in search)
-                        if (symbq.Family.Name == target.name)
-                        {
-                            if (!symbq.IsActive)
-                                symbq.Activate();
-                            var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                            buffInstance.Id.ToString();
-                            id = Convert.ToInt32(buffInstance.Id.ToString());
-                            good = true;
-                            break;
-
-                        }
-                    if (!good)
-                    {
-                        doc.LoadFamily(target.name + ".rfa", out family);
-
-                        var fsym = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-
-                        String name = family.Name;
-                        foreach (FamilySymbol symbq in fsym)
-                        {
-                            if (symbq.Family.Name == name)
-                            {
-                                if (!symbq.IsActive)
-                                    symbq.Activate();
-                                var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                buffInstance.Id.ToString();
-                                id = Convert.ToInt32(buffInstance.Id.ToString());
-                                break;
-                            }
-                        }
-                    }
-                    tr.Commit();
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        tr.Commit();
-                    }
-                    catch (Exception exxx)
-                    {
-
-                    }
-                }
+              
 
 
 
@@ -241,134 +138,51 @@ namespace SCS_Module
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
                     if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.arcs)
+                    if (searcher.result.inBox != null)
+                        foreach (var i in searcher.result.inBox.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+
                     if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    ////
-                    Transaction tr = null;
-                    int id = -1;
-                    try
+
+                    mainList.RemoveAll(x => x.id == searcher.result.id);
+                    mainList.Add(searcher.result);
+
+                    List<Equipment.Point> fake = new List<Equipment.Point>();
+                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
+                    else fake.Add(null);
+                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
+                    else fake.Add(null);
+
+                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+                    for (int i = 0; i < 4; i++)
                     {
-                        File.Create(searcher.result.name + ".rfa").Close();
-                        File.WriteAllBytes(searcher.result.name + ".rfa", searcher.result.bytedFile);
-                        Document doc = commandData.Application.ActiveUIDocument.Document;
-                        Autodesk.Revit.DB.Family family = null;
-
-                        tr = new Transaction(doc);
-                        tr.Start("My Super trans");
-                        //попытка найти существующее семейство
-                        var search = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-                        bool good = false;
-                        foreach (FamilySymbol symbq in search)
-                            if (symbq.Family.Name == searcher.result.name)
-                            {
-                                if (!symbq.IsActive)
-                                    symbq.Activate();
-                                var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                buffInstance.Id.ToString();
-                                id = Convert.ToInt32(buffInstance.Id.ToString());
-                                good = true;
-                                break;
-        
-                            }
-                        if (!good)
-                        {
-                            doc.LoadFamily(searcher.result.name + ".rfa", out family);
-
-                            var fsym = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-
-                            String name = family.Name;
-                            foreach (FamilySymbol symbq in fsym)
-                            {
-                                if (symbq.Family.Name == name)
-                                {
-                                    if (!symbq.IsActive)
-                                        symbq.Activate();
-                                    var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                    buffInstance.Id.ToString();
-                                    id = Convert.ToInt32(buffInstance.Id.ToString());
-                                    break;
-                                }
-                            }
-                        }
-                            
-                     
-                        tr.Commit();
-                        mainList.RemoveAll(x => x.id == searcher.result.id);
-                            mainList.Add(searcher.result);
-
-                        List<Equipment.Point> fake = new List<Equipment.Point>();
-                        if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                        else fake.Add(null);
-                        if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                        else fake.Add(null);
-
-                        List<System.Drawing.Point> real = new List<System.Drawing.Point>();
-                        for (int i = 0; i < 4; i++)
-                        {
-                            if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
-                            float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                            real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
-                        }
-
-
-
-                        mainWorkList.Add(new boxes() { localID = id, globalId = searcher.result.id, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = real.ToArray() });
-                        List<drawer> sortedList = new List<drawer>();
-                        sortedList.AddRange(mainWorkList.FindAll(x => x is boxes));
-                        sortedList.AddRange(mainWorkList.FindAll(x => !(x is boxes)));
-                        mainWorkList = sortedList;
-
-
-
+                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
+                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
                     }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            tr.Commit();
-                        }
-                        catch(Exception eeee)
-                        {
 
-                        }
-                    }
-                    //int current = -1;
-                    //foreach (var i in mainWorkList)
-                    //    if (i.localID > current)
-                    //        current = i.localID;
-                    //current++;
-                    //calculate proportions for 10 000
-                   
+
+                    int id = RevitProvider.createInstance()
+                    mainWorkList.Add(new boxes() { localID = id, globalId = searcher.result.id, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = real.ToArray() });
+                    List<drawer> sortedList = new List<drawer>();
+                    sortedList.AddRange(mainWorkList.FindAll(x => x is boxes));
+                    sortedList.AddRange(mainWorkList.FindAll(x => !(x is boxes)));
+                    mainWorkList = sortedList;
+
+
                 }
                 else if (searcher.result.isInBox)
                 {
@@ -378,15 +192,7 @@ namespace SCS_Module
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
                     if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.arcs)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
@@ -394,15 +200,7 @@ namespace SCS_Module
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
                     if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.arcs)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
@@ -411,56 +209,10 @@ namespace SCS_Module
                         searcher.result.compatibilities[i].isMama = true;
 
                     ////////////////
-                    int id = -1;
-                    Transaction tr = null;
-                    try
-                    {
-                        File.Create(searcher.result.name + ".rfa").Close();
-                        File.WriteAllBytes(searcher.result.name + ".rfa", searcher.result.bytedFile);
-                        Document doc = commandData.Application.ActiveUIDocument.Document;
-                        Autodesk.Revit.DB.Family family = null;
-
-                        tr = new Transaction(doc);
-                        tr.Start("My Super trans");
-                        var search = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-                        bool good = false;
-                        foreach (FamilySymbol symbq in search)
-                            if (symbq.Family.Name == searcher.result.name)
-                            {
-                                if (!symbq.IsActive)
-                                    symbq.Activate();
-                                var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                buffInstance.Id.ToString();
-                                id = Convert.ToInt32(buffInstance.Id.ToString());
-                                good = true;
-                                break;
-
-                            }
-                        if (!good)
-                        {
-                            doc.LoadFamily(searcher.result.name + ".rfa", out family);
-
-                            var fsym = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-
-                            String name = family.Name;
-                            foreach (FamilySymbol symbq in fsym)
-                            {
-                                if (symbq.Family.Name == name)
-                                {
-                                    if (!symbq.IsActive)
-                                        symbq.Activate();
-                                    var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                    buffInstance.Id.ToString();
-                                    id = Convert.ToInt32(buffInstance.Id.ToString());
-                                    break;
-                                }
-                            }
-                        }
-
-                        tr.Commit();
+               
 
                         mainList.RemoveAll(x => x.id == searcher.result.id);
-                            mainList.Add(searcher.result);
+                        mainList.Add(searcher.result);
 
 
                         //calculate proportions for 10 000
@@ -494,20 +246,10 @@ namespace SCS_Module
 
 
 
-                    }
-                    catch(Exception ex)
-                    {
-                        try
-                        {
-                            tr.Commit();
-                        }
-                        catch (Exception eee) { }
-                    }
-
 
 
                     //////////////////
-                   
+
 
                 }
                 else if (searcher.result.isWire)
@@ -523,7 +265,7 @@ namespace SCS_Module
                         wires.Add(new Wire() { MyOwnFirst = searcher.result.compatibilities[0], MyOwnSecond = searcher.result.compatibilities[0] });
                     else wires.Add(new Wire() { MyOwnFirst = searcher.result.compatibilities[0], MyOwnSecond = searcher.result.compatibilities[1] });
                     tabControl1.SelectedIndex = 1;
-              //      MessageBox.Show("выберите начальное оборудование");
+                    //      MessageBox.Show("выберите начальное оборудование");
                     ConnectionController.targetWire = wires[wires.Count - 1];
                     ConnectionController.Mode = modeConnection.buildConnection;
                 }
@@ -533,82 +275,26 @@ namespace SCS_Module
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+
                     if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+
                     if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+
                     if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
                         {
                             i.radiusX = i.radius; i.radiusY = i.radius;
                         }
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.arcs)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+
                     ////
                     int id = -1;
                     Transaction tr = null;
-                    try
-                    {
-                        File.Create(searcher.result.name + ".rfa").Close();
-                        File.WriteAllBytes(searcher.result.name + ".rfa", searcher.result.bytedFile);
-                        Document doc = commandData.Application.ActiveUIDocument.Document;
-                        Autodesk.Revit.DB.Family family = null;
-
-                        tr = new Transaction(doc);
-                        tr.Start("My Super trans");
-                        var search = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-                        bool good = false;
-                        foreach (FamilySymbol symbq in search)
-                            if (symbq.Family.Name == searcher.result.name)
-                            {
-                                if (!symbq.IsActive)
-                                    symbq.Activate();
-                                var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                buffInstance.Id.ToString();
-                                id = Convert.ToInt32(buffInstance.Id.ToString());
-                                good = true;
-                                break;
-
-                            }
-                        if (!good)
-                        {
-                            doc.LoadFamily(searcher.result.name + ".rfa", out family);
-
-                            var fsym = new FilteredElementCollector(doc).OfClass(typeof(FamilySymbol)).Cast<FamilySymbol>().ToList();
-
-                            String name = family.Name;
-                            foreach (FamilySymbol symbq in fsym)
-                            {
-                                if (symbq.Family.Name == name)
-                                {
-                                    if (!symbq.IsActive)
-                                        symbq.Activate();
-                                    var buffInstance = doc.Create.NewFamilyInstance(new XYZ(0, 0, 0), symbq, structuralType: Autodesk.Revit.DB.Structure.StructuralType.NonStructural);
-                                    buffInstance.Id.ToString();
-                                    id = Convert.ToInt32(buffInstance.Id.ToString());
-                                    break;
-                                }
-                            }
-                        }
-
-                        tr.Commit();
+                  
 
 
 
@@ -640,17 +326,6 @@ namespace SCS_Module
                             locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
                             scales = real.ToArray()
                         });
-                    }catch(Exception ex)
-                    {
-                        try
-                        {
-                            tr.Commit();
-                        }
-                        catch(Exception eeee)
-                        {
-
-                        }
-                    }
                 }
                 foreach (var i in mainWorkList)
                     i.drawBox(gr[sheetIndex]);

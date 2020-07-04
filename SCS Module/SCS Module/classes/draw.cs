@@ -9,6 +9,7 @@ namespace SCS_Module
 {
     public abstract class drawer
     {
+        public bool hasFamily = true;
         public Vinoska vinoska;
         public System.Drawing.Point[] locations; //position on list
         public System.Drawing.Point[] scales;
