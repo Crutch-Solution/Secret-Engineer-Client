@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="classes\AutocadExport.cs" />
     <Compile Include="classes\boxes.cs" />
     <Compile Include="classes\draw.cs" />
     <Compile Include="classes\free.cs" />

@@ -295,7 +295,8 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        result += $"pline {j[k].X + locations[localSheetIndex].X},{-j[k].Y - locations[localSheetIndex].Y} {j[k + 1].X + locations[localSheetIndex].X},{-j[k + 1].Y - locations[localSheetIndex].Y} \r\n";
+                        result += AutocadExport.drawLine(locations[localSheetIndex].X+j[k].X, locations[localSheetIndex].Y + j[k].Y, locations[localSheetIndex].X + j[k+1].X, locations[localSheetIndex].Y + j[k+1].Y);
+                    //    result += $"pline {j[k].X + locations[localSheetIndex].X},{-j[k].Y - locations[localSheetIndex].Y} {j[k + 1].X + locations[localSheetIndex].X},{-j[k + 1].Y - locations[localSheetIndex].Y} \r\n";
                         // g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }

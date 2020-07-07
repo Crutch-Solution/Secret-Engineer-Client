@@ -16,7 +16,8 @@ namespace SCS_Module
     class RevitProvider
     {
 
-        public static int copy(Equipment target) {
+        public static int copy(Equipment target)
+        {
             int id = -1;
             Transaction tr = null;
             try
@@ -46,7 +47,8 @@ namespace SCS_Module
                     }
                 tr.Commit();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 id = -1;
                 try
                 {
@@ -57,10 +59,11 @@ namespace SCS_Module
                 }
             }
             return id;
-        
+
         }
-public static void synchronizer()
+        public static void synchronizer()
         {
+            return;
             string a = "";
             Transaction tr = null;
             try
@@ -68,7 +71,7 @@ public static void synchronizer()
                 Document doc = commandData.Application.ActiveUIDocument.Document;
                 tr = new Transaction(doc);
                 tr.Start("My Super trans");
-                for (int i = 0; i <Schemes_Editor. mainWorkList.Count; i++)
+                for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
                 {
 
 
@@ -105,8 +108,11 @@ public static void synchronizer()
             if (a != "") MessageBox.Show(a);
         }
         public static ExternalCommandData commandData;
-        public static int createInstance(byte[] bytes, string familyname )
+        static int shit = 0;
+        public static int createInstance(byte[] bytes, string familyname)
         {
+            shit++;
+            return shit;
             Transaction tr = null;
             int id = -1;
             try

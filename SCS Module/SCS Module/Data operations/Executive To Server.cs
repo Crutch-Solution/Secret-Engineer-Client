@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCS_Module
 {
-    class ExecutiveToServer
+    public class ExecutiveToServer
     {
         public RequestType requestType;
         public string searchString;

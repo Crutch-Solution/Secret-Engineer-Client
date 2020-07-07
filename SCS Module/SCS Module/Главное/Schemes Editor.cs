@@ -38,9 +38,6 @@ namespace SCS_Module
             strct.MouseUp += new System.Windows.Forms.MouseEventHandler(StructuralController.UP);
 
 
-
-
-
             BoxController.father = this;
 
             bitmaps[0] = new Bitmap(pictureBox3.Width, pictureBox3.Height);
@@ -53,6 +50,8 @@ namespace SCS_Module
                 gr[i] = Graphics.FromImage(bitmaps[i]);
                 gr[i].SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             }
+
+            RevitProvider.synchronizer();
         }
 
         static public List<Equipment> mainList = new List<Equipment>();
@@ -78,7 +77,7 @@ namespace SCS_Module
 
                 if (target.isBox)
                 {
-                    mainWorkList.Add(new boxes() { localID = id, globalId = elem.globalId, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = new List<System.Drawing.Point>(elem.scales).ToArray() });
+                    mainWorkList.Add(new boxes() { localID = id, globalId = elem.globalId, locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) }, scales = new List<Point>(elem.scales).ToArray() });
                 }
                 else if (target.isInBox)
                 {
@@ -88,8 +87,8 @@ namespace SCS_Module
                         numberOfUnits = Convert.ToInt32(target.properties["Занимаемых юнитов (шт)"]),
                         localID = id,
                         globalId = elem.globalId,
-                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
-                        scales = new List<System.Drawing.Point>(elem.scales).ToArray()
+                        locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
+                        scales = new List<Point>(elem.scales).ToArray()
                     });
                 }
                 else
@@ -98,8 +97,8 @@ namespace SCS_Module
                     {
                         localID = id,
                         globalId = elem.globalId,
-                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
-                        scales = new List<System.Drawing.Point>(elem.scales).ToArray()
+                        locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
+                        scales = new List<Point>(elem.scales).ToArray()
                     });
                 }
             }
@@ -131,51 +130,27 @@ namespace SCS_Module
             Searcher searcher = new Searcher();
             if (searcher.ShowDialog() == DialogResult.OK)
             {
-                if (searcher.result.isBox)
+                Equipment result = searcher.result;
+                List<Equipment.Point> fake = new List<Equipment.Point>();
+                radiusesFixer(ref result, ref fake);
+                if (result.isBox)
                 {
-                    ////
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inBox != null)
-                        foreach (var i in searcher.result.inBox.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
 
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
+                    mainList.RemoveAll(x => x.id == result.id);
+                    mainList.Add(result);
 
-                    mainList.RemoveAll(x => x.id == searcher.result.id);
-                    mainList.Add(searcher.result);
+               
 
-                    List<Equipment.Point> fake = new List<Equipment.Point>();
-                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                    else fake.Add(null);
-
-                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+                    List<Point> real = new List<Point>();
                     for (int i = 0; i < 4; i++)
                     {
-                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        if (fake[i] == null) { real.Add(new Point(100, 100)); continue; }
                         float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
+                        real.Add(new Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
                     }
 
 
-                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    int id = RevitProvider.createInstance(result.bytedFile, result.name);
                     bool hasFamily = id != -1;
                     Random r = new Random();
                     if (!hasFamily)
@@ -184,7 +159,7 @@ namespace SCS_Module
                         while (mainWorkList.Exists(x => x.localID == id))
                             id = -1 * r.Next(0, int.MaxValue);
                     }
-                    mainWorkList.Add(new boxes() { hasFamily = hasFamily, localID = id, globalId = searcher.result.id, locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) }, scales = real.ToArray() });
+                    mainWorkList.Add(new boxes() { hasFamily = hasFamily, localID = id, globalId = result.id, locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) }, scales = real.ToArray() });
                     List<drawer> sortedList = new List<drawer>();
                     sortedList.AddRange(mainWorkList.FindAll(x => x is boxes));
                     sortedList.AddRange(mainWorkList.FindAll(x => !(x is boxes)));
@@ -192,58 +167,30 @@ namespace SCS_Module
 
 
                 }
-                else if (searcher.result.isInBox)
+                else if (result.isInBox)
                 {
-                    ////
 
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-                    ////
-                    for (int i = 0; i < searcher.result.compatibilities.Count; i++)
-                        searcher.result.compatibilities[i].isMama = true;
-
-                    ////////////////
-
-
-                    mainList.RemoveAll(x => x.id == searcher.result.id);
-                    mainList.Add(searcher.result);
+                    mainList.RemoveAll(x => x.id == result.id);
+                    mainList.Add(result);
 
 
                     //calculate proportions for 10 000
-                    List<Equipment.Point> fake = new List<Equipment.Point>();
-                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                    else fake.Add(null);
 
-                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+
+                    List<Point> real = new List<Point>();
                     for (int i = 0; i < 4; i++)
                     {
-                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        if (fake[i] == null)
+                        {
+                            real.Add(new Point(100, 100));
+                            continue;
+                        }
                         float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
+                        real.Add(new Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
                     }
 
 
-                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    int id = RevitProvider.createInstance(result.bytedFile, result.name);
                     bool hasFamily = id != -1;
                     Random r = new Random();
                     if (!hasFamily)
@@ -256,34 +203,27 @@ namespace SCS_Module
                     mainWorkList.Add(new inboxes()
                     {
                         hasFamily = hasFamily,
-                        numberOfUnits = Convert.ToInt32(searcher.result.properties["Занимаемых юнитов (шт)"]),
+                        numberOfUnits = Convert.ToInt32(result.properties["Занимаемых юнитов (шт)"]),
                         localID = id,
-                        globalId = searcher.result.id,
-                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
+                        globalId = result.id,
+                        locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
                         scales = real.ToArray()
                     });
 
 
-
-
-
-
-                    //////////////////
-
-
                 }
-                else if (searcher.result.isWire)
+                else if (result.isWire)
                 {
                     int current = -1;
                     foreach (var i in mainWorkList)
                         if (i.localID > current)
                             current = i.localID;
                     current++;
-                    if (!mainList.Exists(x => x.id == searcher.result.id))
-                        mainList.Add(searcher.result);
-                    if (searcher.result.compatibilities.Count == 1)
-                        wires.Add(new Wire() { MyOwnFirst = searcher.result.compatibilities[0], MyOwnSecond = searcher.result.compatibilities[0] });
-                    else wires.Add(new Wire() { MyOwnFirst = searcher.result.compatibilities[0], MyOwnSecond = searcher.result.compatibilities[1] });
+                    if (!mainList.Exists(x => x.id == result.id))
+                        mainList.Add(result);
+                    if (result.compatibilities.Count == 1)
+                        wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[0] });
+                    else wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[1] });
                     tabControl1.SelectedIndex = 1;
                     //      MessageBox.Show("выберите начальное оборудование");
                     ConnectionController.targetWire = wires[wires.Count - 1];
@@ -291,53 +231,19 @@ namespace SCS_Module
                 }
                 else
                 {
-                    if (searcher.result.inConnectionScheme != null) foreach (var i in searcher.result.inConnectionScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-
-                    if (searcher.result.inStructural != null) foreach (var i in searcher.result.inStructural.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-
-                    if (searcher.result.inBox != null) foreach (var i in searcher.result.inBox.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-
-                    if (searcher.result.inPlacementScheme != null) foreach (var i in searcher.result.inPlacementScheme.circles)
-                        {
-                            i.radiusX = i.radius; i.radiusY = i.radius;
-                        }
-
-                    ////
-
-
-
-
-                    mainList.RemoveAll(x => x.id == searcher.result.id);
-                    mainList.Add(searcher.result);
+                    mainList.RemoveAll(x => x.id == result.id);
+                    mainList.Add(result);
                     //calculate proportions for 10 000
-                    List<Equipment.Point> fake = new List<Equipment.Point>();
-                    if (searcher.result.inPlacementScheme != null) fake.Add(searcher.result.inPlacementScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inConnectionScheme != null) fake.Add(searcher.result.inConnectionScheme.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inBox != null) fake.Add(searcher.result.inBox.GetProp());
-                    else fake.Add(null);
-                    if (searcher.result.inStructural != null) fake.Add(searcher.result.inStructural.GetProp());
-                    else fake.Add(null);
 
-                    List<System.Drawing.Point> real = new List<System.Drawing.Point>();
+                    List<Point> real = new List<Point>();
                     for (int i = 0; i < 4; i++)
                     {
-                        if (fake[i] == null) { real.Add(new System.Drawing.Point(100, 100)); continue; }
+                        if (fake[i] == null) { real.Add(new Point(100, 100)); continue; }
                         float x = (float)Math.Sqrt(10000 / (fake[i].X * fake[i].Y));
-                        real.Add(new System.Drawing.Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
+                        real.Add(new Point() { X = (int)(fake[i].X * x), Y = (int)(fake[i].Y * x) });
                     }
 
-                    int id = RevitProvider.createInstance(searcher.result.bytedFile, searcher.result.name);
+                    int id = RevitProvider.createInstance(result.bytedFile, result.name);
                     bool hasFamily = id != -1;
                     Random r = new Random();
                     if (!hasFamily)
@@ -351,8 +257,8 @@ namespace SCS_Module
                     {
                         hasFamily = hasFamily,
                         localID = id,
-                        globalId = searcher.result.id,
-                        locations = new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0), new System.Drawing.Point(0, 0) },
+                        globalId = result.id,
+                        locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
                         scales = real.ToArray()
                     });
                 }
@@ -429,14 +335,51 @@ namespace SCS_Module
         {
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
-        static public double distance(System.Drawing.Point a, System.Drawing.Point b)
+        static public double distance(Point a, Point b)
         {
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
         public static int sheetIndex;
 
 
+        void radiusesFixer(ref Equipment result, ref List<Equipment.Point> fake)
+        {
+            if (result.inConnectionScheme != null)
+                foreach (var i in result.inConnectionScheme.circles)
+                {
+                    i.radiusX = i.radius;
+                    i.radiusY = i.radius;
+                }
+            if (result.inStructural != null)
+                foreach (var i in result.inStructural.circles)
+                {
+                    i.radiusX = i.radius;
+                    i.radiusY = i.radius;
+                }
+            if (result.inBox != null)
+                foreach (var i in result.inBox.circles)
+                {
+                    i.radiusX = i.radius;
+                    i.radiusY = i.radius;
+                }
 
+            if (result.inPlacementScheme != null)
+                foreach (var i in result.inPlacementScheme.circles)
+                {
+                    i.radiusX = i.radius;
+                    i.radiusY = i.radius;
+                }
+
+            fake = new List<Equipment.Point>();
+            if (result.inPlacementScheme != null) fake.Add(result.inPlacementScheme.GetProp());
+            else fake.Add(null);
+            if (result.inConnectionScheme != null) fake.Add(result.inConnectionScheme.GetProp());
+            else fake.Add(null);
+            if (result.inBox != null) fake.Add(result.inBox.GetProp());
+            else fake.Add(null);
+            if (result.inStructural != null) fake.Add(result.inStructural.GetProp());
+            else fake.Add(null);
+        }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {

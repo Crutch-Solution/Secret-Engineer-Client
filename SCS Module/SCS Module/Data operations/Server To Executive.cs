@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCS_Module
 {
-    class ServerToExecutive
+    public class ServerToExecutive
     {
         public RequestType responseType;
         public Equipment equipment = null;

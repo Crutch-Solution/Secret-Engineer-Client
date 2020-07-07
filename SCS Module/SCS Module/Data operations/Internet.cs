@@ -9,7 +9,7 @@ using System.Net;
 
 namespace SCS_Module
 {
-    class Internet
+   public class Internet
     {
         static NetworkStream receive_stream, send_stream;
         static byte[] receive_buff = new byte[10000], send_buff = null;
