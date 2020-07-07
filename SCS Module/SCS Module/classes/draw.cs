@@ -19,7 +19,7 @@ namespace SCS_Module
         public abstract void drawBoxExp(ref string result);
         public abstract void drawStrExp(ref string result);
 
-
+        public abstract void rebuildVinosku();
 
         public abstract void createVinosku();
         public abstract void drawPlace(Graphics g);

@@ -17,14 +17,16 @@ namespace SCS_Module
         public int numberOfUnits = -1;
         public override void move(System.Drawing.Point offset, int scheme)
         {
+            locations[scheme] = offset;
             if (vinoska != null)
             {
-                vinoska.startPoint = new System.Drawing.Point(locations[scheme].X + scales[scheme].X / 2, locations[scheme].Y + scales[scheme].Y / 2);
+                rebuildVinosku();
+                //vinoska.startPoint = new System.Drawing.Point(locations[scheme].X + scales[scheme].X / 2, locations[scheme].Y + scales[scheme].Y / 2);
 
-                vinoska.vertex1 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex1.X, offset.Y + locations[scheme].Y - vinoska.vertex1.Y);
-                vinoska.vertex2 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex2.X, offset.Y + locations[scheme].Y - vinoska.vertex2.Y);
+                //vinoska.vertex1 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex1.X, offset.Y + locations[scheme].Y - vinoska.vertex1.Y);
+                //vinoska.vertex2 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex2.X, offset.Y + locations[scheme].Y - vinoska.vertex2.Y);
             }
-            locations[scheme] = offset;
+
 
         }
         public override bool inside(System.Drawing.Point a, int scheme)
@@ -311,6 +313,20 @@ namespace SCS_Module
         public override void drawStrExp(ref string result)
         {
 
+        }
+
+        public override void rebuildVinosku()
+        {
+            if (vinoska != null)
+            {
+                Point a = vinoska.startPoint;
+                Point b = vinoska.vertex1;
+                Point c = vinoska.vertex2;
+                Point newA = new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2);
+                Point newB = new Point(newA.X+b.X-a.X, newA.Y+b.Y-a.Y);
+                Point newc = new Point(newB.X + c.X - b.X, newB.Y + c.Y - b.Y);
+                vinoska = new Vinoska(vinoska.text, newA,newB , newc);
+            }
         }
     }
 }

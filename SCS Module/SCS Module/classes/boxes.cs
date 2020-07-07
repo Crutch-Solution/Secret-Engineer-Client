@@ -35,6 +35,7 @@ namespace SCS_Module
             {
                 equipInside[j].locations[scheme] = new Point(locations[scheme].X + 20, (int)(locations[scheme].Y + 30 + positions[j] * unitSize));
                 equipInside[j].scales[scheme] = new Point(scales[scheme].X - 40, (int)unitSize);
+                equipInside[j].rebuildVinosku();
             }
 
 
@@ -300,6 +301,11 @@ namespace SCS_Module
         public override void drawStrExp(ref string result)
         {
 
+        }
+
+        public override void rebuildVinosku()
+        {
+            throw new NotImplementedException();
         }
     }
 }

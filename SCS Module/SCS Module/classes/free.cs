@@ -224,5 +224,10 @@ namespace SCS_Module
         {
 
         }
+
+        public override void rebuildVinosku()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
