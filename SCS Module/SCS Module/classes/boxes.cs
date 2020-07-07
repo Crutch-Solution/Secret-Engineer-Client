@@ -76,7 +76,19 @@ namespace SCS_Module
                 g.DrawString(equipInside[i - 1].boxLabel, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
                 g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
             }
-
+            //мерная палка left doen start point
+            lu = new Point(locations[scheme].X - 20,(int)( locations[scheme].Y + scales[scheme].Y - 30-unitSize));
+            g.DrawLine(Pens.Black, locations[scheme].X - 20, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 5, locations[scheme].Y + scales[scheme].Y - 30);
+            for (int i = 0; i < units; i++)
+            {
+                g.DrawRectangle(Pens.Black, lu.X, lu.Y - unitSize * i, 3, unitSize);
+                if ((i + 1) % 5 == 0)
+                {
+                   
+                    g.DrawString((i + 1).ToString(), new Font("Arial", 7), Brushes.Black, lu.X + 4, lu.Y - unitSize * i);
+                }
+            }
+            g.DrawLine(Pens.Black, locations[scheme].X - 20, locations[scheme].Y + scales[scheme].Y - 30-unitSize*units, locations[scheme].X - 5, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units);
         }
 
         public override void drawStr(Graphics g)
