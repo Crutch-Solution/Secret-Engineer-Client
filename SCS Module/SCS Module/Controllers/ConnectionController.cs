@@ -18,7 +18,7 @@ namespace SCS_Module
         moveVinosku,
         constantMove,
         dragShkafnoe,
-        moveRoom, 
+        moveRoom,
         buildConnection,
         dragVertex
     }
@@ -42,7 +42,7 @@ namespace SCS_Module
         static public int moveTargetIndex = -1;
         //
         static int localSheet = 1;
-       public static Wire targetWire;
+        public static Wire targetWire;
         public static Point pointToSurroundWire;
         public static bool isWireSelected = false;
         public static int SelectedWireIndex;
@@ -126,7 +126,96 @@ namespace SCS_Module
                                 }
                                 else if (Schemes_Editor.mainWorkList[i] is free)
                                 {
-                              
+                                    //свободные интерфейсы оборудования
+                                    List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
+
+                                    for (int j = 0, jj = 0; j < list.Count; j++, jj++)
+                                        if (((free)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
+                                        {
+                                            list.RemoveAt(jj);
+                                            jj--;
+                                        }
+                                    if (list.Count == 0)
+                                    {
+                                        MessageBox.Show("Отсутствует свободный интерфейс");
+                                    }
+                                    else
+                                    {
+                                        if (!targetWire.isFirstSeized)
+                                        {
+                                            //чек сразу
+                                            var buff = list.Where(x => x.isMama != targetWire.MyOwnSecond.isMama && x.interfaceType.id == targetWire.MyOwnSecond.interfaceType.id).ToList();
+                                            if (buff != null && buff.Count != 0)
+                                            {
+                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == buff[0].interfaceType.id);
+                                                int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
+
+                                                targetWire.isSecondSeized = true;
+                                                targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
+                                                targetWire.OtherSecond = item;
+
+                                                ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                Mode = modeConnection.doNothing_NOSCALEMODE;
+                                                targetWire.createPoints();
+                                            }
+                                            else
+                                            {
+                                                interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
+                                                if (sel.ShowDialog() == DialogResult.OK)
+                                                {
+                                                    var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                    int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
+                                                    targetWire.isFirstSeized = true;
+                                                    targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
+                                                    targetWire.OtherFirst = item;
+
+
+                                                    ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                    //    MessageBox.Show("Выберите второе оборудование");
+                                                }
+                                            }
+                                        }
+                                        else if (!targetWire.isSecondSeized)
+                                        {
+                                            //чек сразу
+                                            var buff = list.Where(x => x.isMama != targetWire.MyOwnSecond.isMama && x.interfaceType.id == targetWire.MyOwnSecond.interfaceType.id).ToList();
+                                            if (buff != null && buff.Count != 0)
+                                            {
+                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == buff[0].interfaceType.id);
+                                                int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
+
+                                                targetWire.isSecondSeized = true;
+                                                targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
+                                                targetWire.OtherSecond = item;
+
+                                                ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                Mode = modeConnection.doNothing_NOSCALEMODE;
+                                                targetWire.createPoints();
+                                            }
+                                            else
+                                            {
+                                                //
+                                                interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
+                                                if (sel.ShowDialog() == DialogResult.OK)
+                                                {
+                                                    var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                    int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
+
+                                                    targetWire.isSecondSeized = true;
+                                                    targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
+                                                    targetWire.OtherSecond = item;
+
+                                                    ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                    Mode = modeConnection.doNothing_NOSCALEMODE;
+                                                    targetWire.createPoints();
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -209,8 +298,6 @@ namespace SCS_Module
                         {
                             //if (Schemes_Editor.mainWorkList[i] is wire_s)
                             //    continue;
-                            if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
-                                continue;
 
                             int a = Schemes_Editor.mainWorkList[i].locations[localSheet].X, b = Schemes_Editor.mainWorkList[i].locations[localSheet].Y, c = Schemes_Editor.mainWorkList[i].locations[localSheet].X + Schemes_Editor.mainWorkList[i].scales[localSheet].X, d = Schemes_Editor.mainWorkList[i].locations[localSheet].Y + Schemes_Editor.mainWorkList[i].scales[localSheet].Y;
                             if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
@@ -282,6 +369,13 @@ namespace SCS_Module
                 ////////////////
                 movable = null;
                 isDrawSelected = false;
+                if (isWireSelected)
+                {
+                    movable = Schemes_Editor.wires[SelectedWireIndex];
+                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
+                    menushka.Show(father.pictureBox2, e.Location);
+                    return;
+                }
                 for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                 {
                     if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -292,7 +386,7 @@ namespace SCS_Module
                             movable = Schemes_Editor.mainWorkList[i];
 
                             isDrawSelected = true;
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler)  });
+                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                             menushka.Show(father.pictureBox2, e.Location);
                             return;
                         }
@@ -320,18 +414,13 @@ namespace SCS_Module
                     if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
                     {
                         isRoomSelected = true;
-                           movable = Schemes_Editor.rooms[i];
+                        movable = Schemes_Editor.rooms[i];
                         ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                         menushka.Show(father.pictureBox2, e.Location);
                         return;
                     }
                 }
-                if (isWireSelected) {
-                    movable = Schemes_Editor.wires[SelectedWireIndex];
-                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                    menushka.Show(father.pictureBox2, e.Location);
-                    return;
-                }
+
                 ////////////////
 
 
@@ -339,7 +428,7 @@ namespace SCS_Module
 
             }
         }
-       static bool isDrawSelected = false;
+        static bool isDrawSelected = false;
         private static void handler(object sender, EventArgs e)
         {
             if (isDrawSelected)
@@ -350,7 +439,7 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
@@ -360,9 +449,9 @@ namespace SCS_Module
 
                         break;
                     case "Удалить":
-                        foreach(var i in Schemes_Editor.wires)
+                        foreach (var i in Schemes_Editor.wires)
                         {
-                            if(i.firstEquip.localID == ((drawer)movable).localID)
+                            if (i.firstEquip.localID == ((drawer)movable).localID)
                             {
                                 var t = ((Wire)movable);
                                 if (t.firstEquip is inboxes)
@@ -433,7 +522,7 @@ namespace SCS_Module
                         break;
                     case "Удалить":
                         var t = ((Wire)movable);
-                        if(t.firstEquip is inboxes)
+                        if (t.firstEquip is inboxes)
                         {
                             ((inboxes)t.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherFirst.interfaceType.id)]--;
                         }
@@ -452,7 +541,7 @@ namespace SCS_Module
                         break;
                 }
             }
-          
+
         }
         static dynamic element;
         static public void MOVE(object sender, MouseEventArgs e)
@@ -522,7 +611,7 @@ namespace SCS_Module
                             }
                         }
                         break;
-                     
+
 
                     case modeConnection.doNothing_SCALEMODE:
                         scalePoint = new Point(-1, -1);
@@ -531,31 +620,26 @@ namespace SCS_Module
                         {
                             //if (Schemes_Editor.mainWorkList[i] is wire_s)
                             //    continue;
-                            if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
-                                continue;
-                            else
+                            int a = Schemes_Editor.mainWorkList[i].locations[localSheet].X, b = Schemes_Editor.mainWorkList[i].locations[localSheet].Y, c = Schemes_Editor.mainWorkList[i].locations[localSheet].X + Schemes_Editor.mainWorkList[i].scales[localSheet].X, d = Schemes_Editor.mainWorkList[i].locations[localSheet].Y + Schemes_Editor.mainWorkList[i].scales[localSheet].Y;
+                            if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
                             {
-                                int a = Schemes_Editor.mainWorkList[i].locations[localSheet].X, b = Schemes_Editor.mainWorkList[i].locations[localSheet].Y, c = Schemes_Editor.mainWorkList[i].locations[localSheet].X + Schemes_Editor.mainWorkList[i].scales[localSheet].X, d = Schemes_Editor.mainWorkList[i].locations[localSheet].Y + Schemes_Editor.mainWorkList[i].scales[localSheet].Y;
-                                if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
-                                {
-                                    scalePoint = new Point(a, b);
-                                    break;
-                                }
-                                if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
-                                {
-                                    scalePoint = new Point(a, d);
-                                    break;
-                                }
-                                if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
-                                {
-                                    scalePoint = new Point(c, b);
-                                    break;
-                                }
-                                if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
-                                {
-                                    scalePoint = new Point(c, d);
-                                    break;
-                                }
+                                scalePoint = new Point(a, b);
+                                break;
+                            }
+                            if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
+                            {
+                                scalePoint = new Point(a, d);
+                                break;
+                            }
+                            if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
+                            {
+                                scalePoint = new Point(c, b);
+                                break;
+                            }
+                            if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
+                            {
+                                scalePoint = new Point(c, d);
+                                break;
                             }
                         }
                         if (scalePoint.X != -1) break;
@@ -735,7 +819,8 @@ namespace SCS_Module
 
                 }
                 draw();
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Mode = modeConnection.doNothing_NOSCALEMODE;
             }
@@ -763,21 +848,12 @@ namespace SCS_Module
                     Mode = modeConnection.doNothing_SCALEMODE;
                     break;
                 case modeConnection.dragShkafnoe:
-                    if (hasRect)
-                    {
-                        boxForInser.equipInside.Add(movable);
-                        boxForInser.positions.Add(indexToInsertInBox);
-                        boxForInser.unitsSeized.Add(movable.numberOfUnits);
-                        ((inboxes)movable).inbox = true;
-                    }
-                    else ((inboxes)movable).inbox = false;
-                    hasRect = false;
                     Mode = modeConnection.doNothing_NOSCALEMODE;
                     break;
             }
         }
 
-       static Point mousePosition;
+        static Point mousePosition;
         static public void draw(bool isNeed = true)
         {
             try
@@ -807,11 +883,11 @@ namespace SCS_Module
                 switch (Mode)
                 {
                     case modeConnection.buildConnection:
-                        if(targetWire!=null && targetWire.isFirstSeized)
+                        if (targetWire != null && targetWire.isFirstSeized)
                         {
                             Schemes_Editor.gr[localSheet].DrawLine(Pens.Red,
-                                new Point(targetWire.firstEquip.locations[localSheet].X + targetWire.firstEquip.scales[localSheet].X/2,
-                                targetWire.firstEquip.locations[localSheet].Y + targetWire.firstEquip.scales[localSheet].Y/2),
+                                new Point(targetWire.firstEquip.locations[localSheet].X + targetWire.firstEquip.scales[localSheet].X / 2,
+                                targetWire.firstEquip.locations[localSheet].Y + targetWire.firstEquip.scales[localSheet].Y / 2),
 
                                 mousePosition);
                         }
@@ -836,8 +912,6 @@ namespace SCS_Module
                         }
                         foreach (var i in Schemes_Editor.mainWorkList)
                         {
-                            if (i is inboxes && ((inboxes)i).inbox)
-                                continue;
                             Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
                         }
                         break;
@@ -870,9 +944,9 @@ namespace SCS_Module
                 right += 100;
                 //рисуем УГОШКИ
                 int iSimulator = 0;
-                if (Schemes_Editor.mainWorkList.Exists(x=>!(x is boxes)))
+                if (Schemes_Editor.mainWorkList.Exists(x => !(x is boxes)))
                 {
-                    foreach(var i in Schemes_Editor.mainList)
+                    foreach (var i in Schemes_Editor.mainList)
                     {
                         if (i.inConnectionScheme == null) continue;
                         var h = i.inConnectionScheme.copy();
@@ -883,7 +957,7 @@ namespace SCS_Module
 
 
                         foreach (var j in h.circles)
-                            Schemes_Editor.gr[localSheet].DrawEllipse(Pens.Black,(int)( right + (float)j.center.X - (float)j.radiusX),(iSimulator*60)+ 20 + (float)j.center.Y - (float)j.radiusY, (float)j.radiusX * 2, (float)j.radiusY * 2);
+                            Schemes_Editor.gr[localSheet].DrawEllipse(Pens.Black, (int)(right + (float)j.center.X - (float)j.radiusX), (iSimulator * 60) + 20 + (float)j.center.Y - (float)j.radiusY, (float)j.radiusX * 2, (float)j.radiusY * 2);
 
                         foreach (var j in h.polyLines)
                         {
@@ -896,7 +970,7 @@ namespace SCS_Module
                         StringFormat f = new StringFormat();
                         f.Alignment = StringAlignment.Center;
                         f.LineAlignment = StringAlignment.Center;
-                        Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60)+20, 300, 50));
+                        Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60) + 20, 300, 50));
                         iSimulator++;
                     }
                 }

@@ -57,7 +57,7 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
@@ -151,6 +151,13 @@ namespace SCS_Module
             {
                 movable = null;
                 isDrawSelected = false;
+                if (isWireSelected)
+                {
+                    movable = Schemes_Editor.wires[SelectedWireIndex];
+                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
+                    menushka.Show(father.strct, e.Location);
+                    return;
+                }
                 for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                 {
                     if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -162,7 +169,7 @@ namespace SCS_Module
 
                             isDrawSelected = true;
                             ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                            menushka.Show(father.pictureBox2, e.Location);
+                            menushka.Show(father.strct, e.Location);
                             return;
                         }
                         if (Schemes_Editor.mainWorkList[i] is boxes)
@@ -170,7 +177,7 @@ namespace SCS_Module
                             movable = Schemes_Editor.mainWorkList[i];
                             isDrawSelected = true;
                             ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                            menushka.Show(father.pictureBox2, e.Location);
+                            menushka.Show(father.strct, e.Location);
                             return;
                         }
                         if (Schemes_Editor.mainWorkList[i] is free)
@@ -178,7 +185,7 @@ namespace SCS_Module
                             movable = Schemes_Editor.mainWorkList[i];
                             isDrawSelected = true;
                             ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                            menushka.Show(father.pictureBox2, e.Location);
+                            menushka.Show(father.strct, e.Location);
                             return;
                         }
                         break;
@@ -191,17 +198,11 @@ namespace SCS_Module
                         isRoomSelected = true;
                         movable = Schemes_Editor.rooms[i];
                         ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                        menushka.Show(father.pictureBox2, e.Location);
+                        menushka.Show(father.strct, e.Location);
                         return;
                     }
                 }
-                if (isWireSelected)
-                {
-                    movable = Schemes_Editor.wires[SelectedWireIndex];
-                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                    menushka.Show(father.pictureBox2, e.Location);
-                    return;
-                }
+
             }
             else
             {

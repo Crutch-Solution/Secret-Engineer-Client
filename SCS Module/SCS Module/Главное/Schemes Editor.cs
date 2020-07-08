@@ -9,6 +9,7 @@ using System.Text;
 
 using System.Windows.Forms;
 
+using Newtonsoft.Json;
 namespace SCS_Module
 {
 
@@ -461,14 +462,49 @@ namespace SCS_Module
                 File.WriteAllText(file.FileName, result, Encoding.GetEncoding(1251));
             }
         }
+
+        private void сохранитьСостояниеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog file = new SaveFileDialog();
+            if(file.ShowDialog() == DialogResult.OK)
+            {
+                File.Create(file.FileName).Close();
+                saver s = new saver();
+                s.mainList = mainList;
+                s.mainWorkList = mainWorkList;
+                s.rooms = rooms;
+                s.wires = wires;
+                File.WriteAllText(file.FileName, JsonConvert.SerializeObject(s));
+            }
+        }
+        class saver
+        { 
+            public List<Equipment> mainList = new List<Equipment>();
+            public List<drawer> mainWorkList = new List<drawer>();
+            public List<Room> rooms = new List<Room>();
+            public List<Wire> wires = new List<Wire>();
+        }
+
+        private void загрузитьСостояниеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            if(file.ShowDialog() == DialogResult.OK)
+            {
+                saver s = JsonConvert.DeserializeObject<saver>(File.ReadAllText(file.FileName));
+                mainList = s.mainList;
+                mainWorkList = s.mainWorkList;
+                rooms = s.rooms;
+                wires = s.wires;
+            }
+        }
     }
 
 
 
 
-    
 
-   
+
+
 
 
 

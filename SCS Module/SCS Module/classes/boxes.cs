@@ -15,6 +15,7 @@ namespace SCS_Module
         public List<int> unitsSeized = new List<int>();
         public override bool inside(Point a, int scheme)
         {
+            
             bool result = false;
             if (a.X > locations[scheme].X && a.X < locations[scheme].X + scales[scheme].X)
                 if (a.Y > locations[scheme].Y && a.Y < locations[scheme].Y + scales[scheme].Y)
@@ -23,6 +24,10 @@ namespace SCS_Module
         }
         public override void drawBox(Graphics g)
         {
+            if (labels == null) {
+                string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                labels = new string[] { roomName , roomName , roomName, roomName };
+                }
             var target = Schemes_Editor.mainList.Find(x => x.id == globalId);
             if (units == -1)
                 units = Convert.ToInt32(target.properties["Количество юнитов (шт)"]);
@@ -35,6 +40,8 @@ namespace SCS_Module
             {
                 equipInside[j].locations[scheme] = new Point(locations[scheme].X + 20, (int)(locations[scheme].Y + 30 + positions[j] * unitSize));
                 equipInside[j].scales[scheme] = new Point(scales[scheme].X - 40, (int)unitSize);
+
+
                 equipInside[j].rebuildVinosku(scheme);
             }
 
@@ -45,8 +52,8 @@ namespace SCS_Module
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                g.DrawString(roomName, new Font("Arial", 8), Brushes.DarkRed, new RectangleF(locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), f);
+               // string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                g.DrawString(labels[scheme], new Font("Arial", 8), Brushes.DarkRed, new RectangleF(locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), f);
 
             }
 
@@ -128,8 +135,8 @@ namespace SCS_Module
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[i].X, locations[i].Y - 30, scales[i].X, 30), f);
+           //     string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                g.DrawString(labels[i], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[i].X, locations[i].Y - 30, scales[i].X, 30), f);
 
             }
         }
@@ -185,15 +192,25 @@ namespace SCS_Module
                         g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }
+
+
+
             }
+
+            foreach (inboxes i in equipInside)
+            {
+                i.locations[localSheetIndex] = locations[localSheetIndex];
+                i.scales[localSheetIndex] = scales[localSheetIndex];
+            }
+
             //по надписи
             StringFormat f = new StringFormat();
             f.Alignment = StringAlignment.Center;
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
+              //  string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
 
             }
 
@@ -210,7 +227,7 @@ namespace SCS_Module
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
                 string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[sheetIndex].X, locations[sheetIndex].Y - 30, scales[sheetIndex].X, 30), f);
+                g.DrawString(labels[sheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[sheetIndex].X, locations[sheetIndex].Y - 30, scales[sheetIndex].X, 30), f);
 
             }
         }

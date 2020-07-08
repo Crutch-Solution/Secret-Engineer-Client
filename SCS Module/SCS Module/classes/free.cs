@@ -11,7 +11,8 @@ namespace SCS_Module
         public List<int> seized = new List<int>();
         public override void createVinosku(int index)
         {
-            ////
+            //поиск целевого шкафа
+            vinoska[index] = new Vinoska(labels[index], new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2), locations[Schemes_Editor.sheetIndex], new Point(locations[Schemes_Editor.sheetIndex].X + 30, locations[Schemes_Editor.sheetIndex].Y));
         }
 
         public override void drawBox(Graphics g)

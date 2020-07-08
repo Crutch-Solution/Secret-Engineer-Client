@@ -48,6 +48,13 @@ namespace SCS_Module
             {
                 movable = null;
                 isDrawSelected = false;
+                if (isWireSelected)
+                {
+                    movable = Schemes_Editor.wires[SelectedWireIndex];
+                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
+                    menushka.Show(father.pictureBox3, e.Location);
+                    return;
+                }
                 for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                 {
                     if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -82,13 +89,7 @@ namespace SCS_Module
                         return;
                     }
                 }
-                if (isWireSelected)
-                {
-                    movable = Schemes_Editor.wires[SelectedWireIndex];
-                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
-                    menushka.Show(father.pictureBox3, e.Location);
-                    return;
-                }
+
             }
             else
             {
@@ -234,7 +235,6 @@ namespace SCS_Module
                 }
             }
         }
-        static dynamic element;
         private static void handler(object sender, EventArgs e)
         {
             if (isDrawSelected)
@@ -245,14 +245,16 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
-
+                        ((drawer)movable).createVinosku(localSheet);
+                        movable = ((drawer)movable);
+                        Mode = modePlacement.moveVinosku;
                         break;
                     case "Копировать":
-
+                        father.copy(movable.globalId, movable);
                         break;
                     case "Удалить":
                         foreach (var i in Schemes_Editor.wires)
@@ -297,7 +299,7 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Удалить":
@@ -322,12 +324,12 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
                         Schemes_Editor.wires[SelectedWireIndex].createVinosku(Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, mousePosition).vertex, localSheet);
-                        element = Schemes_Editor.wires[SelectedWireIndex];
+                        movable = Schemes_Editor.wires[SelectedWireIndex];
                         Mode = modePlacement.moveVinosku;
                         break;
                     case "Удалить":

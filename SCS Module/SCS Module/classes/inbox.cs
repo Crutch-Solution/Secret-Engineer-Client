@@ -182,8 +182,8 @@ namespace SCS_Module
                 //найти название
                 if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
                 {
-                    string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                    g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
+                    // string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                    g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
 
                 }
 

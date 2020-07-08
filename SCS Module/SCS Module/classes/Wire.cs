@@ -68,7 +68,11 @@ namespace SCS_Module
             vertexes = new List<List<Point>>();
             for (int i = 0; i < 4; i++)
             {
-                if (i == 2) points.Add(null);
+                if (i == 2)
+                {
+                    points.Add(null);
+                    vertexes.Add(null);
+                }
                 else
                 {
                     points.Add(new List<Point>());

@@ -12,7 +12,7 @@ namespace SCS_Module
 {
     public partial class interfaceSelector : Form
     {
-        public int selectedId = 0;
+        public int selectedId = -1;
         public interfaceSelector(List<Equipment.Compatibility> list, Equipment.Compatibility target1)
         {
             InitializeComponent();
@@ -27,10 +27,12 @@ namespace SCS_Module
                 selectedId = buffId;
                 DialogResult = DialogResult.OK;
                 Close();
+                panel1.Controls.Add(b);
             }
             if (panel1.Controls.Count == 0)
             {
                 MessageBox.Show("Совместимых интерфейсов нет, используйте переходник");
+
                 foreach (var i in list)
                 {
                     Button b = new Button();
