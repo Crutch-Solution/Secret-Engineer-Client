@@ -9,7 +9,7 @@ namespace SCS_Module
     public class free : drawer
     {
         public List<int> seized = new List<int>();
-        public override void createVinosku()
+        public override void createVinosku(int index)
         {
             ////
         }
@@ -225,7 +225,7 @@ namespace SCS_Module
 
         }
 
-        public override void rebuildVinosku()
+        public override void rebuildVinosku(int a)
         {
             throw new NotImplementedException();
         }

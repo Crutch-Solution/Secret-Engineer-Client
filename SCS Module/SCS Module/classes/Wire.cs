@@ -9,6 +9,8 @@ namespace SCS_Module
 {
     public class Wire
     {
+        public string[] labels = null;
+
         public Vinoska[] vinoska = new Vinoska[] { null,null,null,null};
 
         public int globalId, localID;
@@ -29,7 +31,7 @@ namespace SCS_Module
         public void createVinosku(Point p, int index)
         {
             //поиск целевого шкафа
-            vinoska[index] = new Vinoska(index.ToString(), p, new Point(p.X, p.Y-100), new Point(p.X+100, p.Y - 100));
+            vinoska[index] = new Vinoska(labels[index], p, new Point(p.X, p.Y-100), new Point(p.X+100, p.Y - 100));
         }
         public void draw(Graphics g, int index, bool selected = false)
         {
@@ -42,18 +44,26 @@ namespace SCS_Module
                 for (int i = 0; i < points[index].Count - 1; i++)
                     g.DrawLine(new Pen(Brushes.Red, 1), points[index][i], points[index][i + 1]);
 
-            if (vinoska[index] != null)
+            if (vinoska != null && vinoska[index] !=null)
             {
-                g.DrawLine(Pens.Black, vinoska[index].startPoint, vinoska[index].vertex1);
-                g.DrawLine(Pens.Black, vinoska[index].vertex1, vinoska[index].vertex2);
-            }
+                g.DrawLines(Pens.Blue, new Point[] { vinoska[index].startPoint, vinoska[index].vertex1, vinoska[index].vertex2 });
 
+                if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
+                    g.DrawString(vinoska[index].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30);
+                else
+                    g.DrawString(vinoska[index].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30);
+            }
             //foreach (var i in vertexes[index])
             //    g.DrawEllipse(Pens.Blue, i.X - 1, i.Y - 1, 2, 2);
 
         }
         public void createPoints()
         {
+            if (labels == null)
+            {
+                string a = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                labels = new string[] { a, a , a , a };
+            }
             points = new List<List<Point>>();
             vertexes = new List<List<Point>>();
             for (int i = 0; i < 4; i++)

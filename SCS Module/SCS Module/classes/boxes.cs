@@ -35,7 +35,7 @@ namespace SCS_Module
             {
                 equipInside[j].locations[scheme] = new Point(locations[scheme].X + 20, (int)(locations[scheme].Y + 30 + positions[j] * unitSize));
                 equipInside[j].scales[scheme] = new Point(scales[scheme].X - 40, (int)unitSize);
-                equipInside[j].rebuildVinosku();
+                equipInside[j].rebuildVinosku(scheme);
             }
 
 
@@ -74,7 +74,7 @@ namespace SCS_Module
             for (int i = 1; i < equipInside.Count + 1; i++)
             {
                 g.DrawString(i.ToString(), new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y + 30 * i, one, 30), f);
-                g.DrawString(equipInside[i - 1].boxLabel, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
+                g.DrawString(equipInside[i - 1].labels[scheme], new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
                 g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
             }
             //мерная палка left doen start point
@@ -137,7 +137,7 @@ namespace SCS_Module
             locations[scheme] = offset;
         }
 
-        public override void createVinosku()
+        public override void createVinosku(int index)
         {
 
         }
@@ -276,7 +276,7 @@ namespace SCS_Module
             for (int i = 1; i < equipInside.Count + 1; i++)
             {
                 result += AutocadExport.drawText(lu.X, lu.Y + i*heigth, one, heigth, i.ToString());
-                result += AutocadExport.drawText(lu.X + one, lu.Y + i * heigth, two, heigth, equipInside[i - 1].boxLabel);
+                result += AutocadExport.drawText(lu.X + one, lu.Y + i * heigth, two, heigth, equipInside[i - 1].labels[scheme]);
                 result += AutocadExport.drawText(lu.X + one + two, lu.Y + i * heigth, three, heigth, Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description);
 
 
@@ -303,7 +303,7 @@ namespace SCS_Module
 
         }
 
-        public override void rebuildVinosku()
+        public override void rebuildVinosku(int a)
         {
             throw new NotImplementedException();
         }

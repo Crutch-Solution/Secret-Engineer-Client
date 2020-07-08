@@ -9,7 +9,7 @@ namespace SCS_Module
 {
     public class inboxes : drawer
     {
-        public string boxLabel = "не задано", conLabel = "не задано", strLabel = "не задано";
+
         public List<int> seized = new List<int>();
         public bool isShowingOnConnectionScheme = true;
     //    public List<UsedInterface> listINterfaces = new List<UsedInterface>();
@@ -20,7 +20,7 @@ namespace SCS_Module
             locations[scheme] = offset;
             if (vinoska != null)
             {
-                rebuildVinosku();
+                rebuildVinosku(scheme);
                 //vinoska.startPoint = new Point(locations[scheme].X + scales[scheme].X / 2, locations[scheme].Y + scales[scheme].Y / 2);
 
                 //vinoska.vertex1 = new Point(offset.X + locations[scheme].X - vinoska.vertex1.X, offset.Y + locations[scheme].Y - vinoska.vertex1.Y);
@@ -39,6 +39,11 @@ namespace SCS_Module
         }
         public override void drawBox(Graphics g)
         {
+            if(labels == null)
+            {
+                string name = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                labels = new string[] { name , name , name , name };
+            }
             int localSheetIndex = 2;
             List<Equipment.VectorPic> list = new List<Equipment.VectorPic>();
             if (Schemes_Editor.mainList.Find(x => x.id == globalId).inPlacementScheme != null)
@@ -79,20 +84,23 @@ namespace SCS_Module
                     }
                 }
             }
-            if (vinoska != null)
+            if (vinoska != null && vinoska[localSheetIndex]!=null)
             {
-                g.DrawLines(Pens.Blue, new Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
-                g.DrawString(vinoska.text, new Font("Arial", 14), Brushes.DarkGreen, vinoska.vertex1.X, vinoska.vertex1.Y - 30);
+                g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
+                if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
+                    g.DrawString(vinoska[localSheetIndex].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                else
+                    g.DrawString(vinoska[localSheetIndex].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
             }
         }
 
-        public override void createVinosku()
+        public override void createVinosku(int indexx)
         {
             if (inbox)
             {
                 //поиск целевого шкафа
                 int index = ((boxes)Schemes_Editor.mainWorkList.Find(x => x is boxes && ((boxes)x).equipInside.Exists(y => y.localID == localID))).equipInside.IndexOf(this) + 1;
-                vinoska = new Vinoska(index.ToString(), new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2), locations[Schemes_Editor.sheetIndex], new Point(locations[Schemes_Editor.sheetIndex].X + 30, locations[Schemes_Editor.sheetIndex].Y));
+                vinoska[indexx] = new Vinoska(labels[indexx], new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2), locations[Schemes_Editor.sheetIndex], new Point(locations[Schemes_Editor.sheetIndex].X + 30, locations[Schemes_Editor.sheetIndex].Y));
             }
         }
 
@@ -177,7 +185,7 @@ namespace SCS_Module
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                g.DrawString(strLabel, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
+                g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
 
             }
 
@@ -315,17 +323,17 @@ namespace SCS_Module
 
         }
 
-        public override void rebuildVinosku()
+        public override void rebuildVinosku(int index)
         {
-            if (vinoska != null)
+            if (vinoska != null && vinoska[index]!=null)
             {
-                Point a = vinoska.startPoint;
-                Point b = vinoska.vertex1;
-                Point c = vinoska.vertex2;
+                Point a = vinoska[index].startPoint;
+                Point b = vinoska[index].vertex1;
+                Point c = vinoska[index].vertex2;
                 Point newA = new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2);
                 Point newB = new Point(newA.X+b.X-a.X, newA.Y+b.Y-a.Y);
                 Point newc = new Point(newB.X + c.X - b.X, newB.Y + c.Y - b.Y);
-                vinoska = new Vinoska(vinoska.text, newA,newB , newc);
+                vinoska[index] = new Vinoska(vinoska[index].text, newA,newB , newc);
             }
         }
     }

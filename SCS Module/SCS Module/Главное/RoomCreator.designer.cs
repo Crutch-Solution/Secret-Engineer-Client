@@ -35,14 +35,14 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(32, 43);
+            this.textBox1.Location = new System.Drawing.Point(62, 43);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(232, 22);
             this.textBox1.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(94, 71);
+            this.button1.Location = new System.Drawing.Point(124, 71);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(110, 33);
             this.button1.TabIndex = 1;
@@ -53,22 +53,22 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(107, 23);
+            this.label1.Location = new System.Drawing.Point(117, 23);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 17);
+            this.label1.Size = new System.Drawing.Size(129, 17);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Помещение";
+            this.label1.Text = "Введите название";
             // 
             // RoomCreator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(302, 130);
+            this.ClientSize = new System.Drawing.Size(361, 130);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Name = "RoomCreator";
-            this.Text = "RoomCreator";
+            this.Text = "Создаватель названий";
             this.ResumeLayout(false);
             this.PerformLayout();
 

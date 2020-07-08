@@ -9,8 +9,9 @@ namespace SCS_Module
 {
     public abstract class drawer
     {
+        public string[] labels = null;
         public bool hasFamily = true;
-        public Vinoska vinoska;
+        public Vinoska[] vinoska = new Vinoska[] { null, null, null, null };
         public Point[] locations; //position on list
         public Point[] scales;
         public int globalId, localID;
@@ -19,9 +20,9 @@ namespace SCS_Module
         public abstract void drawBoxExp(ref string result);
         public abstract void drawStrExp(ref string result);
 
-        public abstract void rebuildVinosku();
+        public abstract void rebuildVinosku(int index);
 
-        public abstract void createVinosku();
+        public abstract void createVinosku(int index);
         public abstract void drawPlace(Graphics g);
         public abstract void drawCon(Graphics g);
         public abstract void drawBox(Graphics g);

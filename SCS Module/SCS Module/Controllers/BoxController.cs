@@ -131,7 +131,7 @@ namespace SCS_Module
             switch (((MenuItem)sender).Text)
             {
                 case "Добавить выноску":
-                    element.createVinosku();
+                    element.createVinosku(localSheet);
                     if (element.vinoska == null)
                         return;
                         Mode = modeShkaf.moveVinosku;
@@ -141,6 +141,13 @@ namespace SCS_Module
                     father.copy(element.globalId, element);
                     break;
                 case "Удалить":
+                    break;
+                case "Изменить название":
+                    RoomCreator cr = new RoomCreator();
+                    if(cr.ShowDialog() == DialogResult.OK)
+                    {
+                        element.labels[localSheet] = cr.roomName;
+                    }
                     break;
             }
         }
@@ -177,7 +184,7 @@ namespace SCS_Module
 
 
 
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler) });
+                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Изменить название", handler) });
                             menushka.Show(father.pictureBox1, e.Location);
                             break;
 
@@ -279,171 +286,175 @@ namespace SCS_Module
 
         public static void MOVE(object sender, MouseEventArgs e)
         {
-            switch (Mode)
+            try
             {
-                case modeShkaf.moveVinosku:
-                    float distt = Math.Abs(element.vinoska.vertex1.X - element.vinoska.vertex2.X);
-                    element.vinoska.vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
-                    element.vinoska.vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
+                switch (Mode)
+                {
+                    case modeShkaf.moveVinosku:
+                        float distt = Math.Abs(element.vinoska[localSheet].vertex1.X - element.vinoska[localSheet].vertex2.X);
+                        element.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
+                        element.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
 
-                    if(element.vinoska.vertex2.X< element.vinoska.startPoint.X)
-                    {
-                        Point t = element.vinoska.vertex1;
-                        element.vinoska.vertex1 = element.vinoska.vertex2;
-                        element.vinoska.vertex2 = t;
-                    }
-                    break;
-                case modeShkaf.dragShkaf:
-                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
-                    break;
-                case modeShkaf.dragShkafnoe:
-                    hasRect = false;
-                    inboxes pointer = (inboxes)movable;
-                    pointer.inbox = false;
-                    foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
-                    {
-                        if (!j.inside(e.Location, 2)) continue;
-                        //если внутри необходимых свободных ячеек, то выделить их
-                        List<int> acceptable = new List<int>();
-                        for (int k = 0; k < j.units; k++)
+                        if (element.vinoska[localSheet].vertex2.X < element.vinoska[localSheet].startPoint.X)
                         {
-                            acceptable.Add(k);
+                            Point t = element.vinoska[localSheet].vertex1;
+                            element.vinoska[localSheet].vertex1 = element.vinoska[localSheet].vertex2;
+                            element.vinoska[localSheet].vertex2 = t;
                         }
-                        for (int k = 0; k < j.equipInside.Count; k++)
-                            //метка всех занятых
-                            for (int d = j.positions[k]; d < j.positions[k] + j.unitsSeized[k]; d++)
-                                acceptable[d] = -1;
-                        acceptable.RemoveAll(x => x == -1);
-                        for (int k = 0; k < acceptable.Count - 1; k++)
+                        break;
+                    case modeShkaf.dragShkaf:
+                        movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
+                        break;
+                    case modeShkaf.dragShkafnoe:
+                        hasRect = false;
+                        inboxes pointer = (inboxes)movable;
+                        pointer.inbox = false;
+                        foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
                         {
-                            int current = acceptable[k];
-                            bool good = true;
-                            for (int d = 1; d < pointer.numberOfUnits; d++)
+                            if (!j.inside(e.Location, 2)) continue;
+                            //если внутри необходимых свободных ячеек, то выделить их
+                            List<int> acceptable = new List<int>();
+                            for (int k = 0; k < j.units; k++)
                             {
-                                if (k + d == acceptable.Count)
+                                acceptable.Add(k);
+                            }
+                            for (int k = 0; k < j.equipInside.Count; k++)
+                                //метка всех занятых
+                                for (int d = j.positions[k]; d < j.positions[k] + j.unitsSeized[k]; d++)
+                                    acceptable[d] = -1;
+                            acceptable.RemoveAll(x => x == -1);
+                            for (int k = 0; k < acceptable.Count - 1; k++)
+                            {
+                                int current = acceptable[k];
+                                bool good = true;
+                                for (int d = 1; d < pointer.numberOfUnits; d++)
                                 {
-                                    good = false;
+                                    if (k + d == acceptable.Count)
+                                    {
+                                        good = false;
+                                        break;
+                                    }
+                                    if (acceptable[k + d] != current + 1)
+                                    {
+                                        good = false;
+                                        break;
+                                    }
+                                    current++;
+                                }
+                                if (!good)
+                                {
+                                    acceptable.RemoveAt(k);
+                                    k--;
+                                }
+                            }
+                            //поиск тех, внутри которых находимся
+                            foreach (var k in acceptable)
+                            {
+                                if (
+                                    e.X > j.locations[2].X + 20 &&
+                                    e.X < j.locations[2].X + j.scales[2].X - 20 &&
+                                    e.Y > j.locations[2].Y + 30 + k * (j.unitSize + 1) &&
+                                    e.Y < j.locations[2].Y + 30 + (k + 1) * (j.unitSize + 1))
+                                {
+                                    hasRect = true;
+                                    rect = new Rectangle(j.locations[2].X + 20, (int)(j.locations[2].Y + 30 + k * (j.unitSize)), j.scales[2].X - 40, (int)j.unitSize);
+                                    boxForInser = j;
+                                    indexToInsertInBox = k;
+                                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
+                                    draw();
+                                    return;
+                                }
+                            }
+                        }
+                        movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
+                        break;
+                    case modeShkaf.doNothing_NOSCALEMODE:
+                        indexToSurround = -1;
+                        for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
+                        {
+                            if (Schemes_Editor.mainWorkList[i].inside(e.Location, 2))
+                            {
+                                indexToSurround = i;
+                                break;
+                            }
+                        }
+                        break;
+
+                    case modeShkaf.doNothing_SCALEMODE:
+                        scalePoint = new Point(-1, -1);
+                        //finding nearest dots
+                        for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
+                        {
+                            //if (Schemes_Editor.mainWorkList[i] is wire_s)
+                            //    continue;
+                            if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
+                                continue;
+                            else
+                            {
+                                int a = Schemes_Editor.mainWorkList[i].locations[2].X, b = Schemes_Editor.mainWorkList[i].locations[2].Y, c = Schemes_Editor.mainWorkList[i].locations[2].X + Schemes_Editor.mainWorkList[i].scales[2].X, d = Schemes_Editor.mainWorkList[i].locations[2].Y + Schemes_Editor.mainWorkList[i].scales[2].Y;
+                                if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(a, b);
                                     break;
                                 }
-                                if (acceptable[k + d] != current + 1)
+                                if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
                                 {
-                                    good = false;
+                                    scalePoint = new Point(a, d);
                                     break;
                                 }
-                                current++;
-                            }
-                            if (!good)
-                            {
-                                acceptable.RemoveAt(k);
-                                k--;
-                            }
-                        }
-                        //поиск тех, внутри которых находимся
-                        foreach (var k in acceptable)
-                        {
-                            if (
-                                e.X > j.locations[2].X + 20 &&
-                                e.X < j.locations[2].X + j.scales[2].X - 20 &&
-                                e.Y > j.locations[2].Y + 30 + k * (j.unitSize + 1) &&
-                                e.Y < j.locations[2].Y + 30 + (k + 1) * (j.unitSize + 1))
-                            {
-                                hasRect = true;
-                                rect = new Rectangle(j.locations[2].X + 20, (int)(j.locations[2].Y + 30 + k * (j.unitSize)), j.scales[2].X - 40, (int)j.unitSize);
-                                boxForInser = j;
-                                indexToInsertInBox = k;
-                                movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
-                                draw();
-                                return;
+                                if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, b);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, d);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), 2);
-                    break;
-                case modeShkaf.doNothing_NOSCALEMODE:
-                    indexToSurround = -1;
-                    for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
-                    {
-                        if (Schemes_Editor.mainWorkList[i].inside(e.Location, 2))
-                        {
-                            indexToSurround = i;
-                            break;
-                        }
-                    }
-                    break;
+                        break;
 
-                case modeShkaf.doNothing_SCALEMODE:
-                    scalePoint = new Point(-1, -1);
-                    //finding nearest dots
-                    for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
-                    {
-                        //if (Schemes_Editor.mainWorkList[i] is wire_s)
-                        //    continue;
-                        if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
-                            continue;
-                        else
+                    case modeShkaf.scaleSomething:
+                        var buff = Schemes_Editor.mainWorkList[moveTargetIndex];
+                        if (pointNum == 0)
                         {
-                            int a = Schemes_Editor.mainWorkList[i].locations[2].X, b = Schemes_Editor.mainWorkList[i].locations[2].Y, c = Schemes_Editor.mainWorkList[i].locations[2].X + Schemes_Editor.mainWorkList[i].scales[2].X, d = Schemes_Editor.mainWorkList[i].locations[2].Y + Schemes_Editor.mainWorkList[i].scales[2].Y;
-                            if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
-                            {
-                                scalePoint = new Point(a, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(a, d);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, d);
-                                break;
-                            }
+                            //num 3
+                            Point p = new Point(buff.locations[2].X + buff.scales[2].X, buff.locations[2].Y + buff.scales[2].Y);
+                            buff.scales[2] = new Point(p.X - e.Location.X, p.Y - e.Location.Y);
+                            buff.locations[2] = e.Location;
+                            scalePoint = e.Location;
                         }
-                    }
-                    break;
+                        if (pointNum == 1)
+                        {
+                            //num 3
+                            Point p = new Point(buff.locations[2].X, buff.locations[2].Y + buff.scales[2].Y);
+                            buff.scales[2] = new Point(e.Location.X - p.X, p.Y - e.Location.Y);
+                            buff.locations[2] = new Point(e.Location.X - buff.scales[2].X, e.Location.Y);
+                            scalePoint = e.Location;
+                        }
+                        if (pointNum == 2)
+                        {
+                            //num 3
+                            buff.scales[2] = new Point(e.Location.X - buff.locations[2].X, e.Location.Y - buff.locations[2].Y);
+                            // buff.locations[2] = e.Location;
+                            scalePoint = e.Location;
+                        }
+                        if (pointNum == 3)
+                        {
+                            //num 3
+                            Point p = new Point(buff.locations[2].X + buff.scales[2].X, buff.locations[2].Y);
+                            buff.scales[2] = new Point(p.X - e.Location.X, e.Location.Y - p.Y);
+                            buff.locations[2] = new Point(e.Location.X, p.Y);
+                            scalePoint = e.Location;
+                        }
+                        break;
 
-                case modeShkaf.scaleSomething:
-                    var buff = Schemes_Editor.mainWorkList[moveTargetIndex];
-                    if (pointNum == 0)
-                    {
-                        //num 3
-                        Point p = new Point(buff.locations[2].X + buff.scales[2].X, buff.locations[2].Y + buff.scales[2].Y);
-                        buff.scales[2] = new Point(p.X - e.Location.X, p.Y - e.Location.Y);
-                        buff.locations[2] = e.Location;
-                        scalePoint = e.Location;
-                    }
-                    if (pointNum == 1)
-                    {
-                        //num 3
-                        Point p = new Point(buff.locations[2].X, buff.locations[2].Y + buff.scales[2].Y);
-                        buff.scales[2] = new Point(e.Location.X - p.X, p.Y - e.Location.Y);
-                        buff.locations[2] = new Point(e.Location.X - buff.scales[2].X, e.Location.Y);
-                        scalePoint = e.Location;
-                    }
-                    if (pointNum == 2)
-                    {
-                        //num 3
-                        buff.scales[2] = new Point(e.Location.X - buff.locations[2].X, e.Location.Y - buff.locations[2].Y);
-                        // buff.locations[2] = e.Location;
-                        scalePoint = e.Location;
-                    }
-                    if (pointNum == 3)
-                    {
-                        //num 3
-                        Point p = new Point(buff.locations[2].X + buff.scales[2].X, buff.locations[2].Y);
-                        buff.scales[2] = new Point(p.X - e.Location.X, e.Location.Y - p.Y);
-                        buff.locations[2] = new Point(e.Location.X, p.Y);
-                        scalePoint = e.Location;
-                    }
-                    break;
-
+                }
+                draw();
             }
-            draw();
+            catch (Exception ex) { Mode = modeShkaf.doNothing_NOSCALEMODE; }
         }
 
 

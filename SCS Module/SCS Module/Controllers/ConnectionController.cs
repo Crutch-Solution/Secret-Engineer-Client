@@ -242,6 +242,32 @@ namespace SCS_Module
                         if (movable != null) break;
                         else
                         {
+                            if (isWireSelected)
+                            {
+                                var t = Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
+                                if (t.isExists)
+                                {
+                                    VertexNumber = t.ExistingIndex;
+                                    if (VertexNumber != -1)
+                                    {
+                                        Mode = modeConnection.dragVertex;
+                                        movable = 1;
+                                    }
+                                }
+                                else //создать новую опорную точку
+                                {
+                                    VertexNumber = Schemes_Editor.wires[SelectedWireIndex].insertPoint(t.vertex, localSheet);
+                                    if (VertexNumber != -1)
+                                    {
+                                        Mode = modeConnection.dragVertex;
+                                        movable = 1;
+                                    }
+                                }
+                            }    
+                        }
+                        if (movable != null) break;
+                        else
+                        {
                             for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
                             {
                                 if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
@@ -251,24 +277,6 @@ namespace SCS_Module
                                     movable = Schemes_Editor.rooms[i];
                                     Mode = modeConnection.moveRoom;
                                     break;
-                                }
-                            }
-                        }
-                        if (movable != null) break;
-                        else
-                        {
-                            if (isWireSelected)
-                            {
-                                var t = Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
-                                if (t.isExists)
-                                {
-                                    VertexNumber = t.ExistingIndex;
-                                    if (VertexNumber != -1) Mode = modeConnection.dragVertex;
-                                }
-                                else //создать новую опорную точку
-                                {
-                                    VertexNumber = Schemes_Editor.wires[SelectedWireIndex].insertPoint(t.vertex, localSheet);
-                                    if (VertexNumber != -1) Mode = modeConnection.dragVertex;
                                 }
                             }
                         }
@@ -364,7 +372,7 @@ namespace SCS_Module
                             movable = Schemes_Editor.mainWorkList[i];
 
                             isDrawSelected = true;
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler) });
+                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler)  });
                             menushka.Show(father.pictureBox2, e.Location);
                             return;
                         }
@@ -372,7 +380,7 @@ namespace SCS_Module
                         {
                             movable = Schemes_Editor.mainWorkList[i];
                             isDrawSelected = true;
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler) });
+                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                             menushka.Show(father.pictureBox2, e.Location);
                             return;
                         }
@@ -380,7 +388,7 @@ namespace SCS_Module
                         {
                             movable = Schemes_Editor.mainWorkList[i];
                             isDrawSelected = true;
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler) });
+                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                             menushka.Show(father.pictureBox2, e.Location);
                             return;
                         }
@@ -393,14 +401,14 @@ namespace SCS_Module
                     {
                         isRoomSelected = true;
                            movable = Schemes_Editor.rooms[i];
-                        ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler) });
+                        ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                         menushka.Show(father.pictureBox2, e.Location);
                         return;
                     }
                 }
                 if (isWireSelected) {
                     movable = Schemes_Editor.wires[SelectedWireIndex];
-                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler) });
+                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                     menushka.Show(father.pictureBox2, e.Location);
                     return;
                 }
@@ -418,6 +426,13 @@ namespace SCS_Module
             {
                 switch (((MenuItem)sender).Text)
                 {
+                    case "Изменить название":
+                        RoomCreator cr = new RoomCreator();
+                        if (cr.ShowDialog() == DialogResult.OK)
+                        {
+                            element.labels[localSheet] = cr.roomName;
+                        }
+                        break;
                     case "Добавить выноску":
 
                         break;
@@ -467,8 +482,17 @@ namespace SCS_Module
             {
                 switch (((MenuItem)sender).Text)
                 {
+                    case "Изменить название":
+                        RoomCreator cr = new RoomCreator();
+                        if (cr.ShowDialog() == DialogResult.OK)
+                        {
+                            element.labels[localSheet] = cr.roomName;
+                        }
+                        break;
                     case "Добавить выноску":
-
+                        Schemes_Editor.wires[SelectedWireIndex].createVinosku(Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, mousePosition).vertex, localSheet);
+                        element = Schemes_Editor.wires[SelectedWireIndex];
+                        Mode = modeConnection.moveVinosku;
                         break;
                     case "Копировать":
                         var result = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.wires[SelectedWireIndex].globalId);
@@ -510,272 +534,293 @@ namespace SCS_Module
             }
           
         }
-
+        static dynamic element;
         static public void MOVE(object sender, MouseEventArgs e)
         {
-            mousePosition = e.Location;
-            switch (Mode)
+            try
             {
-                case modeConnection.dragVertex:
-                    Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point( e.Location.X-5, e.Location.Y-5);
-                    break;
-                case modeConnection.moveRoom:
-                    movable.move(new Point(e.X - Prev.X, e.Y - Prev.Y), localSheet);
-                    break;
+                mousePosition = e.Location;
+                switch (Mode)
+                {
+                    case modeConnection.moveVinosku:
+                        float distt = Math.Abs(element.vinoska[localSheet].vertex1.X - element.vinoska[localSheet].vertex2.X);
+                        element.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
+                        element.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
 
-                case modeConnection.doNothing_NOSCALEMODE:
-                    indexToSurround = -1;
-                    isRoomSelected = false;
-                    isWireSelected = false;
-                    for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
-                    {
-                        if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
+                        if (element.vinoska[localSheet].vertex2.X < element.vinoska[localSheet].startPoint.X)
                         {
-                            indexToSurround = i;
-                            break;
+                            Point t = element.vinoska[localSheet].vertex1;
+                            element.vinoska[localSheet].vertex1 = element.vinoska[localSheet].vertex2;
+                            element.vinoska[localSheet].vertex2 = t;
                         }
-                    }
-                    if (indexToSurround != -1) break;
-                    else
-                    {
-                        for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
+                        break;
+
+
+                    case modeConnection.dragVertex:
+                        Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X - 5, e.Location.Y - 5);
+                        break;
+
+                    case modeConnection.moveRoom:
+                        movable.move(new Point(e.X - Prev.X, e.Y - Prev.Y), localSheet);
+                        break;
+
+                    case modeConnection.doNothing_NOSCALEMODE:
+                        indexToSurround = -1;
+                        isRoomSelected = false;
+                        isWireSelected = false;
+                        for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                         {
-                            if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
+                            if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
                             {
-                                isRoomSelected = true;
                                 indexToSurround = i;
                                 break;
                             }
                         }
-                    }
-                    if (indexToSurround != -1 && isRoomSelected) break;
-                    else
-                    {
-                        for(int i=0;i< Schemes_Editor.wires.Count; i++)
-                        {
-                            selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
-                            if (ver.vertex.X != -1)
-                            {
-                                isWireSelected = true;
-                                SelectedWireIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                    break;
-
-
-                case modeConnection.doNothing_SCALEMODE:
-                    scalePoint = new Point(-1, -1);
-                    //finding nearest dots
-                    for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
-                    {
-                        //if (Schemes_Editor.mainWorkList[i] is wire_s)
-                        //    continue;
-                        if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
-                            continue;
+                        if (indexToSurround != -1) break;
                         else
                         {
-                            int a = Schemes_Editor.mainWorkList[i].locations[localSheet].X, b = Schemes_Editor.mainWorkList[i].locations[localSheet].Y, c = Schemes_Editor.mainWorkList[i].locations[localSheet].X + Schemes_Editor.mainWorkList[i].scales[localSheet].X, d = Schemes_Editor.mainWorkList[i].locations[localSheet].Y + Schemes_Editor.mainWorkList[i].scales[localSheet].Y;
-                            if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
+                            for (int i = 0; i < Schemes_Editor.wires.Count; i++)
                             {
-                                scalePoint = new Point(a, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(a, d);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, d);
-                                break;
-                            }
-                        }
-                    }
-                    if (scalePoint.X != -1) break;
-                    else
-                    {
-                        for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
-                        {
-                            int a = Schemes_Editor.rooms[i].locations[localSheet].X, b = Schemes_Editor.rooms[i].locations[localSheet].Y, c = Schemes_Editor.rooms[i].locations[localSheet].X + Schemes_Editor.rooms[i].locations[localSheet].Width, d = Schemes_Editor.rooms[i].locations[localSheet].Y + Schemes_Editor.rooms[i].locations[localSheet].Height;
-                            if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
-                            {
-                                scalePoint = new Point(a, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(a, d);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, b);
-                                break;
-                            }
-                            if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
-                            {
-                                scalePoint = new Point(c, d);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-
-                case modeConnection.dragShkaf:
-                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
-                    break;
-
-                case modeConnection.dragShkafnoe:
-                    hasRect = false;
-                    inboxes pointer = (inboxes)movable;
-                    pointer.inbox = false;
-                    foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
-                    {
-                        if (!j.inside(e.Location, localSheet)) continue;
-                        //если внутри необходимых свободных ячеек, то выделить их
-                        List<int> acceptable = new List<int>();
-                        for (int k = 0; k < j.units; k++)
-                        {
-                            acceptable.Add(k);
-                        }
-                        for (int k = 0; k < j.equipInside.Count; k++)
-                            //метка всех занятых
-                            for (int d = j.positions[k]; d < j.positions[k] + j.unitsSeized[k]; d++)
-                                acceptable[d] = -1;
-                        acceptable.RemoveAll(x => x == -1);
-                        for (int k = 0; k < acceptable.Count - 1; k++)
-                        {
-                            int current = acceptable[k];
-                            bool good = true;
-                            for (int d = 1; d < pointer.numberOfUnits; d++)
-                            {
-                                if (k + d == acceptable.Count)
+                                selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
+                                if (ver.vertex.X != -1)
                                 {
-                                    good = false;
+                                    isWireSelected = true;
+                                    SelectedWireIndex = i;
                                     break;
                                 }
-                                if (acceptable[k + d] != current + 1)
+                            }
+                        }
+                        if (indexToSurround != -1 || isWireSelected) break;
+                        else
+                        {
+                            for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
+                            {
+                                if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
                                 {
-                                    good = false;
+                                    isRoomSelected = true;
+                                    indexToSurround = i;
                                     break;
                                 }
-                                current++;
                             }
-                            if (!good)
+                        }
+                        break;
+                     
+
+                    case modeConnection.doNothing_SCALEMODE:
+                        scalePoint = new Point(-1, -1);
+                        //finding nearest dots
+                        for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
+                        {
+                            //if (Schemes_Editor.mainWorkList[i] is wire_s)
+                            //    continue;
+                            if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
+                                continue;
+                            else
                             {
-                                acceptable.RemoveAt(k);
-                                k--;
+                                int a = Schemes_Editor.mainWorkList[i].locations[localSheet].X, b = Schemes_Editor.mainWorkList[i].locations[localSheet].Y, c = Schemes_Editor.mainWorkList[i].locations[localSheet].X + Schemes_Editor.mainWorkList[i].scales[localSheet].X, d = Schemes_Editor.mainWorkList[i].locations[localSheet].Y + Schemes_Editor.mainWorkList[i].scales[localSheet].Y;
+                                if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(a, b);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(a, d);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, b);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, d);
+                                    break;
+                                }
                             }
                         }
-                        //поиск тех, внутри которых находимся
-                        foreach (var k in acceptable)
+                        if (scalePoint.X != -1) break;
+                        else
                         {
-                            if (
-                                e.X > j.locations[localSheet].X + 20 &&
-                                e.X < j.locations[localSheet].X + j.scales[localSheet].X - 20 &&
-                                e.Y > j.locations[localSheet].Y + 30 + k * (j.unitSize + 1) &&
-                                e.Y < j.locations[localSheet].Y + 30 + (k + 1) * (j.unitSize + 1))
+                            for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
                             {
-                                hasRect = true;
-                                rect = new Rectangle(j.locations[localSheet].X + 20, (int)(j.locations[2].Y + 30 + k * (j.unitSize)), j.scales[localSheet].X - 40, (int)j.unitSize);
-                                boxForInser = j;
-                                indexToInsertInBox = k;
-                                movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
-                                draw();
-                                return;
+                                int a = Schemes_Editor.rooms[i].locations[localSheet].X, b = Schemes_Editor.rooms[i].locations[localSheet].Y, c = Schemes_Editor.rooms[i].locations[localSheet].X + Schemes_Editor.rooms[i].locations[localSheet].Width, d = Schemes_Editor.rooms[i].locations[localSheet].Y + Schemes_Editor.rooms[i].locations[localSheet].Height;
+                                if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(a, b);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(a, d), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(a, d);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(c, b), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, b);
+                                    break;
+                                }
+                                if (Schemes_Editor.distance(new Point(c, d), e.Location) < 20)
+                                {
+                                    scalePoint = new Point(c, d);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
-                    break;
+                        break;
 
-                case modeConnection.scaleSomething:
-                    if (isRoomSelected)
-                    {
-                        var buff = Schemes_Editor.rooms[moveTargetIndex];
-                        if (pointNum == 0)
+                    case modeConnection.dragShkaf:
+                        movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
+                        break;
+
+                    case modeConnection.dragShkafnoe:
+                        hasRect = false;
+                        inboxes pointer = (inboxes)movable;
+                        pointer.inbox = false;
+                        foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
                         {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X + buff.locations[localSheet].Width, buff.locations[localSheet].Y + buff.locations[localSheet].Height);
-
-                            buff.locations[localSheet] = new Rectangle(e.Location.X, e.Location.Y, p.X - e.Location.X, p.Y - e.Location.Y);
-
-                            scalePoint = e.Location;
+                            if (!j.inside(e.Location, localSheet)) continue;
+                            //если внутри необходимых свободных ячеек, то выделить их
+                            List<int> acceptable = new List<int>();
+                            for (int k = 0; k < j.units; k++)
+                            {
+                                acceptable.Add(k);
+                            }
+                            for (int k = 0; k < j.equipInside.Count; k++)
+                                //метка всех занятых
+                                for (int d = j.positions[k]; d < j.positions[k] + j.unitsSeized[k]; d++)
+                                    acceptable[d] = -1;
+                            acceptable.RemoveAll(x => x == -1);
+                            for (int k = 0; k < acceptable.Count - 1; k++)
+                            {
+                                int current = acceptable[k];
+                                bool good = true;
+                                for (int d = 1; d < pointer.numberOfUnits; d++)
+                                {
+                                    if (k + d == acceptable.Count)
+                                    {
+                                        good = false;
+                                        break;
+                                    }
+                                    if (acceptable[k + d] != current + 1)
+                                    {
+                                        good = false;
+                                        break;
+                                    }
+                                    current++;
+                                }
+                                if (!good)
+                                {
+                                    acceptable.RemoveAt(k);
+                                    k--;
+                                }
+                            }
+                            //поиск тех, внутри которых находимся
+                            foreach (var k in acceptable)
+                            {
+                                if (
+                                    e.X > j.locations[localSheet].X + 20 &&
+                                    e.X < j.locations[localSheet].X + j.scales[localSheet].X - 20 &&
+                                    e.Y > j.locations[localSheet].Y + 30 + k * (j.unitSize + 1) &&
+                                    e.Y < j.locations[localSheet].Y + 30 + (k + 1) * (j.unitSize + 1))
+                                {
+                                    hasRect = true;
+                                    rect = new Rectangle(j.locations[localSheet].X + 20, (int)(j.locations[2].Y + 30 + k * (j.unitSize)), j.scales[localSheet].X - 40, (int)j.unitSize);
+                                    boxForInser = j;
+                                    indexToInsertInBox = k;
+                                    movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
+                                    draw();
+                                    return;
+                                }
+                            }
                         }
-                        if (pointNum == 1)
+                        movable.move(new Point(e.Location.X - Prev.X, e.Location.Y - Prev.Y), localSheet);
+                        break;
+
+                    case modeConnection.scaleSomething:
+                        if (isRoomSelected)
                         {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X, buff.locations[localSheet].Y + buff.locations[localSheet].Height);
+                            var buff = Schemes_Editor.rooms[moveTargetIndex];
+                            if (pointNum == 0)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X + buff.locations[localSheet].Width, buff.locations[localSheet].Y + buff.locations[localSheet].Height);
 
-                            buff.locations[localSheet] = new Rectangle(buff.locations[localSheet].X, e.Location.Y, e.Location.X - p.X, p.Y - e.Location.Y);
+                                buff.locations[localSheet] = new Rectangle(e.Location.X, e.Location.Y, p.X - e.Location.X, p.Y - e.Location.Y);
+
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 1)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X, buff.locations[localSheet].Y + buff.locations[localSheet].Height);
+
+                                buff.locations[localSheet] = new Rectangle(buff.locations[localSheet].X, e.Location.Y, e.Location.X - p.X, p.Y - e.Location.Y);
 
 
-                            scalePoint = e.Location;
-                        }
-                        if (pointNum == 2)
-                        {
-                            //num 3
-                            buff.locations[localSheet] = new Rectangle(buff.locations[localSheet].X, buff.locations[localSheet].Y, e.Location.X - buff.locations[localSheet].X, e.Location.Y - buff.locations[localSheet].Y);
-                            // buff.locations[2] = e.Location;
-                            scalePoint = e.Location;
-                        }
-                        if (pointNum == 3)
-                        {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X + buff.locations[localSheet].Width, buff.locations[localSheet].Y);
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 2)
+                            {
+                                //num 3
+                                buff.locations[localSheet] = new Rectangle(buff.locations[localSheet].X, buff.locations[localSheet].Y, e.Location.X - buff.locations[localSheet].X, e.Location.Y - buff.locations[localSheet].Y);
+                                // buff.locations[2] = e.Location;
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 3)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X + buff.locations[localSheet].Width, buff.locations[localSheet].Y);
 
-                            buff.locations[localSheet] = new Rectangle(e.Location.X, p.Y, p.X - e.Location.X, e.Location.Y - p.Y);
+                                buff.locations[localSheet] = new Rectangle(e.Location.X, p.Y, p.X - e.Location.X, e.Location.Y - p.Y);
 
-                            scalePoint = e.Location;
+                                scalePoint = e.Location;
+                            }
                         }
-                    }
-                    else
-                    {
-                        var buff = Schemes_Editor.mainWorkList[moveTargetIndex];
-                        if (pointNum == 0)
+                        else
                         {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X + buff.scales[localSheet].X, buff.locations[localSheet].Y + buff.scales[localSheet].Y);
-                            buff.scales[localSheet] = new Point(p.X - e.Location.X, p.Y - e.Location.Y);
-                            buff.locations[localSheet] = e.Location;
-                            scalePoint = e.Location;
+                            var buff = Schemes_Editor.mainWorkList[moveTargetIndex];
+                            if (pointNum == 0)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X + buff.scales[localSheet].X, buff.locations[localSheet].Y + buff.scales[localSheet].Y);
+                                buff.scales[localSheet] = new Point(p.X - e.Location.X, p.Y - e.Location.Y);
+                                buff.locations[localSheet] = e.Location;
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 1)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X, buff.locations[localSheet].Y + buff.scales[localSheet].Y);
+                                buff.scales[localSheet] = new Point(e.Location.X - p.X, p.Y - e.Location.Y);
+                                buff.locations[localSheet] = new Point(e.Location.X - buff.scales[localSheet].X, e.Location.Y);
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 2)
+                            {
+                                //num 3
+                                buff.scales[localSheet] = new Point(e.Location.X - buff.locations[localSheet].X, e.Location.Y - buff.locations[localSheet].Y);
+                                // buff.locations[2] = e.Location;
+                                scalePoint = e.Location;
+                            }
+                            if (pointNum == 3)
+                            {
+                                //num 3
+                                Point p = new Point(buff.locations[localSheet].X + buff.scales[localSheet].X, buff.locations[localSheet].Y);
+                                buff.scales[localSheet] = new Point(p.X - e.Location.X, e.Location.Y - p.Y);
+                                buff.locations[localSheet] = new Point(e.Location.X, p.Y);
+                                scalePoint = e.Location;
+                            }
                         }
-                        if (pointNum == 1)
-                        {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X, buff.locations[localSheet].Y + buff.scales[localSheet].Y);
-                            buff.scales[localSheet] = new Point(e.Location.X - p.X, p.Y - e.Location.Y);
-                            buff.locations[localSheet] = new Point(e.Location.X - buff.scales[localSheet].X, e.Location.Y);
-                            scalePoint = e.Location;
-                        }
-                        if (pointNum == 2)
-                        {
-                            //num 3
-                            buff.scales[localSheet] = new Point(e.Location.X - buff.locations[localSheet].X, e.Location.Y - buff.locations[localSheet].Y);
-                            // buff.locations[2] = e.Location;
-                            scalePoint = e.Location;
-                        }
-                        if (pointNum == 3)
-                        {
-                            //num 3
-                            Point p = new Point(buff.locations[localSheet].X + buff.scales[localSheet].X, buff.locations[localSheet].Y);
-                            buff.scales[localSheet] = new Point(p.X - e.Location.X, e.Location.Y - p.Y);
-                            buff.locations[localSheet] = new Point(e.Location.X, p.Y);
-                            scalePoint = e.Location;
-                        }
-                    }
-                    break;
+                        break;
 
+                }
+                draw();
+            }catch(Exception ex)
+            {
+                Mode = modeConnection.doNothing_NOSCALEMODE;
             }
-            draw();
         }
 
         static public void UP(object sender, MouseEventArgs e)
@@ -784,6 +829,9 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
+                case modeConnection.moveVinosku:
+                    Mode = modeConnection.doNothing_NOSCALEMODE;
+                    break;
                 case modeConnection.dragVertex:
                     Mode = modeConnection.doNothing_NOSCALEMODE;
                     break;
