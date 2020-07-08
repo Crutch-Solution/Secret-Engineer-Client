@@ -17,8 +17,7 @@ namespace SCS_Module
         moveVinosku,
         constantMove,
         moveRoom,
-        dragFree,
-        editWire
+        dragFree
     }
     public static class PlacementController
     {

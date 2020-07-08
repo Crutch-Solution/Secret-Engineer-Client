@@ -15,21 +15,21 @@ namespace SCS_Module
         public List<UsedInterface> listINterfaces = new List<UsedInterface>();
         public bool inbox = false;
         public int numberOfUnits = -1;
-        public override void move(System.Drawing.Point offset, int scheme)
+        public override void move(Point offset, int scheme)
         {
             locations[scheme] = offset;
             if (vinoska != null)
             {
                 rebuildVinosku();
-                //vinoska.startPoint = new System.Drawing.Point(locations[scheme].X + scales[scheme].X / 2, locations[scheme].Y + scales[scheme].Y / 2);
+                //vinoska.startPoint = new Point(locations[scheme].X + scales[scheme].X / 2, locations[scheme].Y + scales[scheme].Y / 2);
 
-                //vinoska.vertex1 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex1.X, offset.Y + locations[scheme].Y - vinoska.vertex1.Y);
-                //vinoska.vertex2 = new System.Drawing.Point(offset.X + locations[scheme].X - vinoska.vertex2.X, offset.Y + locations[scheme].Y - vinoska.vertex2.Y);
+                //vinoska.vertex1 = new Point(offset.X + locations[scheme].X - vinoska.vertex1.X, offset.Y + locations[scheme].Y - vinoska.vertex1.Y);
+                //vinoska.vertex2 = new Point(offset.X + locations[scheme].X - vinoska.vertex2.X, offset.Y + locations[scheme].Y - vinoska.vertex2.Y);
             }
 
 
         }
-        public override bool inside(System.Drawing.Point a, int scheme)
+        public override bool inside(Point a, int scheme)
         {
             bool result = false;
             if (a.X > locations[scheme].X && a.X < locations[scheme].X + scales[scheme].X)
@@ -81,7 +81,7 @@ namespace SCS_Module
             }
             if (vinoska != null)
             {
-                g.DrawLines(Pens.Blue, new System.Drawing.Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
+                g.DrawLines(Pens.Blue, new Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
                 g.DrawString(vinoska.text, new Font("Arial", 14), Brushes.DarkGreen, vinoska.vertex1.X, vinoska.vertex1.Y - 30);
             }
         }
@@ -92,7 +92,7 @@ namespace SCS_Module
             {
                 //поиск целевого шкафа
                 int index = ((boxes)Schemes_Editor.mainWorkList.Find(x => x is boxes && ((boxes)x).equipInside.Exists(y => y.localID == localID))).equipInside.IndexOf(this) + 1;
-                vinoska = new Vinoska(index.ToString(), new System.Drawing.Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2), locations[Schemes_Editor.sheetIndex], new System.Drawing.Point(locations[Schemes_Editor.sheetIndex].X + 30, locations[Schemes_Editor.sheetIndex].Y));
+                vinoska = new Vinoska(index.ToString(), new Point(locations[2].X + scales[2].X / 2, locations[2].Y + scales[2].Y / 2), locations[Schemes_Editor.sheetIndex], new Point(locations[Schemes_Editor.sheetIndex].X + 30, locations[Schemes_Editor.sheetIndex].Y));
             }
         }
 
@@ -164,10 +164,10 @@ namespace SCS_Module
         {
             int localSheetIndex = 3;
 
-            g.DrawLines(new Pen(Brushes.Black, 3), new System.Drawing.Point[] { locations[localSheetIndex],
-                new System.Drawing.Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y),
-                new System.Drawing.Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
-                new System.Drawing.Point(locations[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
+            g.DrawLines(new Pen(Brushes.Black, 3), new Point[] { locations[localSheetIndex],
+                new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y),
+                new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
+                new Point(locations[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
                 locations[localSheetIndex] });
 
 
@@ -188,7 +188,7 @@ namespace SCS_Module
             //}
         }
 
-        public override void offset(System.Drawing.Point offset, int scheme)
+        public override void offset(Point offset, int scheme)
         {
 
         }
@@ -305,7 +305,7 @@ namespace SCS_Module
             }
             if (vinoska != null)
             {
-                //g.DrawLines(Pens.Blue, new System.Drawing.Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
+                //g.DrawLines(Pens.Blue, new Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
                 //g.DrawString(vinoska.text, new Font("Arial", 14), Brushes.DarkGreen, vinoska.vertex1.X, vinoska.vertex1.Y - 30);
             }
         }

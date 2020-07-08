@@ -20,7 +20,6 @@ namespace SCS_Module
         dragShkafnoe,
         moveRoom, 
         buildConnection,
-        editWire, 
         dragVertex
     }
     public static class ConnectionController
@@ -54,14 +53,14 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
-                case modeConnection.editWire:
-                    if (pointNumber != -1)
-                    {
-                        Schemes_Editor.wires[wireIndex].veryfied[localSheet][pointNumber] = true;
-                        Mode = modeConnection.dragVertex;
-                    }
+                //case modeConnection.editWire:
+                //    if (pointNumber != -1)
+                //    {
+                //        Schemes_Editor.wires[wireIndex].veryfied[localSheet][pointNumber] = true;
+                //        Mode = modeConnection.dragVertex;
+                //    }
 
-                    break;
+                    //break;
                 case modeConnection.buildConnection:
                     for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                     {
@@ -351,22 +350,22 @@ namespace SCS_Module
                 case modeConnection.dragVertex:
                     Schemes_Editor.wires[wireIndex].points[localSheet][pointNumber] = new Point( e.Location.X-5, e.Location.Y-5);
                     break;
-                case modeConnection.editWire:
-                    pointNumber = -1; wireIndex = -1; double longest = double.MaxValue;
-                    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
-                    {
-                        for (int j = 0; j < Schemes_Editor.wires[i].points[localSheet].Count; j++)
-                        {
-                            if(Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location) < longest && Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location)<20)
-                            {
-                                pointToSurroundWire = Schemes_Editor.wires[i].points[localSheet][j];
-                                pointNumber = j;
-                                wireIndex = i;
-                            }
-                        }
-                    }
+                //case modeConnection.editWire:
+                //    pointNumber = -1; wireIndex = -1; double longest = double.MaxValue;
+                //    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
+                //    {
+                //        for (int j = 0; j < Schemes_Editor.wires[i].points[localSheet].Count; j++)
+                //        {
+                //            if(Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location) < longest && Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location)<20)
+                //            {
+                //                pointToSurroundWire = Schemes_Editor.wires[i].points[localSheet][j];
+                //                pointNumber = j;
+                //                wireIndex = i;
+                //            }
+                //        }
+                //    }
 
-                    break;
+                //    break;
                 case modeConnection.moveRoom:
                     movable.move(new Point(e.X - Prev.X, e.Y - Prev.Y), localSheet);
                     break;
@@ -615,10 +614,10 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
-                case modeConnection.dragVertex:
-                    Mode = modeConnection.editWire;
-                    Schemes_Editor.wires[wireIndex].rebuild();
-                    break;
+                //case modeConnection.dragVertex:
+                //    Mode = modeConnection.editWire;
+                //    Schemes_Editor.wires[wireIndex].rebuild();
+                //    break;
                 case modeConnection.moveRoom:
                     Mode = modeConnection.doNothing_NOSCALEMODE;
                     break;
@@ -667,12 +666,12 @@ namespace SCS_Module
 
                 switch (Mode)
                 {
-                    case modeConnection.editWire:
-                        if (pointNumber != -1)
-                        {
-                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), pointToSurroundWire.X - 5, pointToSurroundWire.Y - 5, 10, 10);
-                        }
-                        break;
+                    //case modeConnection.editWire:
+                    //    if (pointNumber != -1)
+                    //    {
+                    //        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), pointToSurroundWire.X - 5, pointToSurroundWire.Y - 5, 10, 10);
+                    //    }
+                    //    break;
                     case modeConnection.doNothing_NOSCALEMODE:
                         if (indexToSurround != -1)
                         {

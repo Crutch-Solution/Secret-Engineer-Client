@@ -206,7 +206,7 @@ namespace SCS_Module
 
         }
 
-        public override bool inside(System.Drawing.Point a, int scheme)
+        public override bool inside(Point a, int scheme)
         {
             bool result = false;
             if (a.X > locations[scheme].X && a.X < locations[scheme].X + scales[scheme].X)
@@ -215,12 +215,12 @@ namespace SCS_Module
             return result;
         }
 
-        public override void move(System.Drawing.Point offset, int scheme)
+        public override void move(Point offset, int scheme)
         {
             locations[scheme] = offset;
         }
 
-        public override void offset(System.Drawing.Point offset, int scheme)
+        public override void offset(Point offset, int scheme)
         {
 
         }

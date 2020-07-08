@@ -9,118 +9,83 @@ namespace SCS_Module
 {
     public class Wire
     {
-        public List<List<System.Drawing.Point>> points = new List<List<System.Drawing.Point>>();
-        public List<List<bool>> veryfied = new List<List<bool>>();
+        public List<List<Point>> points = new List<List<Point>>();
+
+        public List<List<Point>> vertexes = new List<List<Point>>();
+
         public Equipment.Compatibility MyOwnFirst, MyOwnSecond;
-        public bool first = true, second = true;
-        public dynamic firstEquip = null, secondEquip = null;
+
+        public Equipment.Compatibility OtherFirst, OtherSecond;
+
+        public bool isFirstSeized = false, isSecondSeized = false;
+
+        public drawer firstEquip = null, secondEquip = null;
 
 
-        public void draw(Graphics g, int i, bool reb = true)
+
+        public void draw(Graphics g, int index)
         {
             if (points.Count < 2) return;
-            if (reb) rebuild();
+            rebuild(index);
 
-            points[i][0] = new System.Drawing.Point(firstEquip.locations[i].X + firstEquip.scales[i].X / 2, firstEquip.locations[i].Y + firstEquip.scales[i].Y / 2);
-            points[i][points[i].Count - 1] = new System.Drawing.Point(secondEquip.locations[i].X + secondEquip.scales[i].X / 2, secondEquip.locations[i].Y + secondEquip.scales[i].Y / 2);
-
-            System.Drawing.Point prev = points[i][0];
-            for (int j = 1; j < points[i].Count - 1; j++)
-            {
-                if (veryfied[i][j])
-                {
-                    g.DrawLine(Pens.Black, prev, points[i][j]);
-                    prev = points[i][j];
-                }
-            }
-            g.DrawLine(Pens.Black, prev, points[i][points[i].Count - 1]);
-
-
-            //var t = (drawer)firstEquip;
-            //var pa = new Point(t.locations[i].X + t.scales[i].X / 2, t.locations[i].Y + t.scales[i].Y / 2);
-            //var q = (drawer)secondEquip;
-            //Point dva = new Point(q.locations[i].X + q.scales[i].X / 2, q.locations[i].Y + q.scales[i].Y / 2);
-            //g.DrawLine(Pens.Black, pa,dva);
+            for (int i = 0; i < points[index].Count - 1; i++)
+                g.DrawLine(new Pen(Brushes.Red, 2), points[index][i], points[index][i + 1]);
 
         }
         public void createPoints()
         {
-            points = new List<List<System.Drawing.Point>>();
-            points.Add(new List<System.Drawing.Point>());
-
-            veryfied = new List<List<bool>>();
-            veryfied.Add(new List<bool>());
-            var t = (drawer)firstEquip;
+            points = new List<List<Point>>();
+            vertexes = new List<List<Point>>();
             for (int i = 0; i < 4; i++)
             {
-                points[i].Add(new System.Drawing.Point(t.locations[i].X + t.scales[i].X / 2, t.locations[i].Y + t.scales[i].Y / 2));
-                veryfied[i].Add(true);
-                if (i != 3)
+                if (i == 2) points.Add(null);
+                else
                 {
-                    points.Add(new List<System.Drawing.Point>());
-                    veryfied.Add(new List<bool>());
+                    points.Add(new List<Point>());
+                    vertexes.Add(new List<Point>());
+                    points[i].Add(new Point(firstEquip.locations[i].X + firstEquip.scales[i].X / 2, firstEquip.locations[i].Y + firstEquip.scales[i].Y / 2));
                 }
             }
-            for (int i = 0; i < 4; i++)
-            {
-                var q = (drawer)secondEquip;
-                System.Drawing.Point dva = new System.Drawing.Point(q.locations[i].X + q.scales[i].X / 2, q.locations[i].Y + q.scales[i].Y / 2);
-                double dist = Schemes_Editor.distance(dva, points[i][0]);
-                double shag = dist / 10.0;
-                System.Drawing.Point prev = points[i][0];
-                double angle = Math.Atan((dva.X - (points[i][0].X * 1.0)) / (dva.Y - (points[i][0].Y * 1.0)));
-                for (int j = 0; j < 10; j++)
-                {
-                    points[i].Add(new System.Drawing.Point((int)(prev.X + shag * Math.Sin(angle)), (int)(prev.Y + shag * Math.Cos(angle))));
-                    veryfied[i].Add(false);
-                    prev = new System.Drawing.Point((int)(prev.X + shag * Math.Sin(angle)), (int)(prev.Y + shag * Math.Cos(angle)));
-                }
-                points[i].Add(dva);
-                veryfied[i].Add(true);
-            }
-
         }
-
-        internal void rebuild()
+        public void rebuild(int index)
         {
-            for (int i = 0; i < 4; i++)
+            points[index][0] = new Point(firstEquip.locations[index].X + firstEquip.scales[index].X / 2, firstEquip.locations[index].Y + firstEquip.scales[index].Y / 2);
+            points[index][points[index].Count - 1] = new Point(secondEquip.locations[index].X + secondEquip.scales[index].X / 2, secondEquip.locations[index].Y + secondEquip.scales[index].Y / 2);
+
+            //calculate length
+            double step = 0;
+            for (int i = 0; i < points[index].Count - 1; i++)
+                step += Schemes_Editor.distance(points[index][i], points[index][i + 1]);
+            step /= 100.0;
+
+            vertexes[index].Clear();
+
+            for (int i = 0; i < points[index].Count - 1; i++)
             {
-                for (int j = 0; j < points[i].Count; j++)
+                double localdistance = Schemes_Editor.distance(points[index][i], points[index][i + 1]);
+                double angle = Math.Atan((points[index][i + 1].Y - points[index][i].Y) / (points[index][i + 1].X - points[index][i].X));
+
+                for (int j = 0; j < localdistance / step; j++)
                 {
-                    if (!veryfied[i][j])
-                    {
-                        veryfied[i].RemoveAt(j);
-                        points[i].RemoveAt(j);
-                        j--;
-                    }
+                    vertexes[index].Add(new Point((int)(points[index][i].X + step * Math.Cos(angle)), (int)(points[index][i].Y + step * Math.Sin(angle))));
                 }
             }
-            List<List<System.Drawing.Point>> newlist = new List<List<System.Drawing.Point>>();
-            for (int i = 0; i < 4; i++)
+        }
+        public Point inside(int index, Point target)
+        {
+            //find shortest dist
+            double distance = double.MaxValue, buff;
+            Point result = new Point(-1,-1);
+            foreach (var i in vertexes[index])
             {
-                newlist.Add(new List<System.Drawing.Point>());
-                veryfied[i] = new List<bool>();
-                veryfied[i].Add(true);
-                newlist[i].Add(points[i][0]);
-
-                for (int j = 1; j < points[i].Count; j++)
+                buff = Schemes_Editor.distance(i, target);
+                if (buff < 30 && buff < distance)
                 {
-                    double dist = Schemes_Editor.distance(points[i][j], points[i][j - 1]);
-                    double shag = dist / 10.0;
-                    System.Drawing.Point prev = points[i][j - 1];
-                    double angle = Math.Atan((points[i][j].X - (points[i][j - 1].X * 1.0)) / (points[i][j].Y - (points[i][j - 1].Y * 1.0)));
-                    for (int k = 0; k < 10; k++)
-                    {
-                        newlist[i].Add(new System.Drawing.Point((int)(prev.X + shag * Math.Sin(angle)), (int)(prev.Y + shag * Math.Cos(angle))));
-                        veryfied[i].Add(false);
-                        prev = new System.Drawing.Point((int)(prev.X + shag * Math.Sin(angle)), (int)(prev.Y + shag * Math.Cos(angle)));
-                    }
-                    veryfied[i].Add(true);
-                    newlist[i].Add(points[i][j]);
+                    result = i;
+                    distance = buff;
                 }
-
             }
-            points = newlist;
+            return result;
         }
     }
 }

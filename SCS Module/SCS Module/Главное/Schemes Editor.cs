@@ -223,7 +223,8 @@ namespace SCS_Module
                         mainList.Add(result);
                     if (result.compatibilities.Count == 1)
                         wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[0] });
-                    else wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[1] });
+                    else
+                        wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[1] });
                     tabControl1.SelectedIndex = 1;
                     //      MessageBox.Show("выберите начальное оборудование");
                     ConnectionController.targetWire = wires[wires.Count - 1];
@@ -302,9 +303,9 @@ namespace SCS_Module
         bool scale_mode = false;
         private void button1_Click(object sender, EventArgs e)
         {
-            if (button1.Text == "Режим масштабирования\nвыключен")
+            if (button1.Text == "Режим масштабирования выключен")
             {
-                button1.Text = "Режим масштабирования\nвключен";
+                button1.Text = "Режим масштабирования включен";
                 button1.BackColor = System.Drawing.Color.LightGreen;
                 BoxController.Mode = modeShkaf.doNothing_SCALEMODE;
                 StructuralController.Mode = modeStruct.doNothing_SCALEMODE;
@@ -316,7 +317,7 @@ namespace SCS_Module
             }
             else if (BoxController.Mode == modeShkaf.doNothing_SCALEMODE)
             {
-                button1.Text = "Режим масштабирования\nвыключен";
+                button1.Text = "Режим масштабирования выключен";
                 button1.BackColor = System.Drawing.Color.Pink;
                 BoxController.Mode = modeShkaf.doNothing_NOSCALEMODE;
                 StructuralController.Mode = modeStruct.doNothing_NOSCALEMODE;
@@ -405,7 +406,7 @@ namespace SCS_Module
         private void button2_Click(object sender, EventArgs e)
         {
 
-            if (button2.Text == "Режим редактирования кабеля включен")
+         /*   if (button2.Text == "Режим редактирования кабеля включен")
             {
                 button1.Text = "Режим масштабирования\nвыключен";
                 button1.BackColor = System.Drawing.Color.Pink;
@@ -432,7 +433,7 @@ namespace SCS_Module
             BoxController.draw();
             StructuralController.draw();
             PlacementController.draw();
-            ConnectionController.draw();
+            ConnectionController.draw();*/
         }
 
         private void экспортСхемToolStripMenuItem_Click(object sender, EventArgs e)

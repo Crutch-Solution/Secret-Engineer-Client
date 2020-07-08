@@ -11,8 +11,8 @@ namespace SCS_Module
     {
         public bool hasFamily = true;
         public Vinoska vinoska;
-        public System.Drawing.Point[] locations; //position on list
-        public System.Drawing.Point[] scales;
+        public Point[] locations; //position on list
+        public Point[] scales;
         public int globalId, localID;
         public abstract void drawPlaceExp(ref string result);
         public abstract void drawConExp(ref string result);
@@ -26,8 +26,8 @@ namespace SCS_Module
         public abstract void drawCon(Graphics g);
         public abstract void drawBox(Graphics g);
         public abstract void drawStr(Graphics g);
-        public abstract bool inside(System.Drawing.Point a, int scheme);
-        public abstract void move(System.Drawing.Point offset, int scheme);
-        public abstract void offset(System.Drawing.Point offset, int scheme);
+        public abstract bool inside(Point a, int scheme);
+        public abstract void move(Point offset, int scheme);
+        public abstract void offset(Point offset, int scheme);
     }
 }

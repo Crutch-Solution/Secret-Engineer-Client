@@ -16,8 +16,7 @@ namespace SCS_Module
         dragShkaf,
         scaleSomething,
         moveVinosku,
-        constantMove,
-        editWire
+        constantMove
     }
     static public class BoxController
     {

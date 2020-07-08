@@ -17,8 +17,7 @@ namespace SCS_Module
         scaleSomething,
         moveVinosku,
         constantMove,
-        moveRoom,
-        editWire
+        moveRoom
     }
     static class StructuralController
     {

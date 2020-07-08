@@ -230,7 +230,7 @@ namespace SCS_Module
 //        {
 //            //debugger bug = new debugger();
 //            //bug.Show();
-//            //bug.Location = new System.Drawing.Point(0, 0);
+//            //bug.Location = new Point(0, 0);
 //            VectorPic pic = new VectorPic();
 //            //пятна
 //            List<List<Point>> spots = new List<List<Point>>();
