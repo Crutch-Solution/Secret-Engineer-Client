@@ -71,8 +71,9 @@ namespace SCS_Module
                                 if (Schemes_Editor.mainWorkList[i] is inboxes)
                                 {
                                     //свободные интерфейсы оборудования
-                                    List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
-
+                                    List<Equipment.Compatibility> list = new List<Equipment.Compatibility>();
+                                    var buffList = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
+                                    foreach (var j in buffList) list.Add(new Equipment.Compatibility() { count = j.count, interfaceType = j.interfaceType, isMama = j.isMama });
                                     for (int j = 0, jj = 0; j < list.Count; j++, jj++)
                                         if (((inboxes)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
                                         {
@@ -87,28 +88,47 @@ namespace SCS_Module
                                     {
                                         if (!targetWire.isFirstSeized)
                                         {
-                                            interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
-                                            if (sel.ShowDialog() == DialogResult.OK)
+                                            //чек сразу
+                                            var buff = list.Where(x => x.isMama != targetWire.MyOwnSecond.isMama && x.interfaceType.id == targetWire.MyOwnSecond.interfaceType.id).ToList();
+                                            if (buff != null && buff.Count != 0)
                                             {
-                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == buff[0].interfaceType.id);
                                                 int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
 
                                                 targetWire.isFirstSeized = true;
                                                 targetWire.firstEquip = (inboxes)Schemes_Editor.mainWorkList[i];
                                                 targetWire.OtherFirst = item;
 
-
                                                 ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                                //    MessageBox.Show("Выберите второе оборудование");
+                                                Mode = modeConnection.doNothing_NOSCALEMODE;
+                                             //   targetWire.createPoints();
                                             }
+                                            else
+                                            {
+                                                interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
+                                                if (sel.ShowDialog() == DialogResult.OK)
+                                                {
+                                                    var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                    int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
 
+                                                    targetWire.isFirstSeized = true;
+                                                    targetWire.firstEquip = (inboxes)Schemes_Editor.mainWorkList[i];
+                                                    targetWire.OtherFirst = item;
+
+
+                                                    ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                    //    MessageBox.Show("Выберите второе оборудование");
+                                                }
+                                            }
                                         }
                                         else if (!targetWire.isSecondSeized)
                                         {
-                                            interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
-                                            if (sel.ShowDialog() == DialogResult.OK)
+                                            //чек сразу
+                                            var buff = list.Where(x => x.isMama != targetWire.MyOwnSecond.isMama && x.interfaceType.id == targetWire.MyOwnSecond.interfaceType.id).ToList();
+                                            if (buff != null && buff.Count != 0)
                                             {
-                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == buff[0].interfaceType.id);
                                                 int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
 
 
@@ -120,6 +140,24 @@ namespace SCS_Module
                                                 Mode = modeConnection.doNothing_NOSCALEMODE;
                                                 targetWire.createPoints();
                                             }
+                                            else
+                                            {
+                                                interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
+                                                if (sel.ShowDialog() == DialogResult.OK)
+                                                {
+                                                    var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
+                                                    int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
+
+
+                                                    targetWire.isSecondSeized = true;
+                                                    targetWire.secondEquip = (inboxes)Schemes_Editor.mainWorkList[i];
+                                                    targetWire.OtherSecond = item;
+
+                                                    ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                                    Mode = modeConnection.doNothing_NOSCALEMODE;
+                                                    targetWire.createPoints();
+                                                }
+                                            }
                                         }
                                     }
 
@@ -127,8 +165,9 @@ namespace SCS_Module
                                 else if (Schemes_Editor.mainWorkList[i] is free)
                                 {
                                     //свободные интерфейсы оборудования
-                                    List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
-
+                                    List<Equipment.Compatibility> list = new List<Equipment.Compatibility>();
+                                    var buffList = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
+                                    foreach (var j in buffList) list.Add(new Equipment.Compatibility() { count = j.count, interfaceType = j.interfaceType, isMama = j.isMama });
                                     for (int j = 0, jj = 0; j < list.Count; j++, jj++)
                                         if (((free)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
                                         {
@@ -151,13 +190,13 @@ namespace SCS_Module
                                                 int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
 
 
-                                                targetWire.isSecondSeized = true;
-                                                targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
-                                                targetWire.OtherSecond = item;
+                                                targetWire.isFirstSeized = true;
+                                                targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
+                                                targetWire.OtherFirst = item;
 
                                                 ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
                                                 Mode = modeConnection.doNothing_NOSCALEMODE;
-                                                targetWire.createPoints();
+                                             //   targetWire.createPoints();
                                             }
                                             else
                                             {
@@ -236,7 +275,7 @@ namespace SCS_Module
                                 if (VertexNumber != -1)
                                 {
                                     Mode = modeConnection.dragVertex;
-                                    movable = 1;
+                                    movable = Schemes_Editor.wires[SelectedWireIndex];
                                 }
                             }
                             else //создать новую опорную точку
@@ -245,7 +284,7 @@ namespace SCS_Module
                                 if (VertexNumber != -1)
                                 {
                                     Mode = modeConnection.dragVertex;
-                                    movable = 1;
+                                    movable = Schemes_Editor.wires[SelectedWireIndex];
                                 }
                             }
                         }
@@ -449,33 +488,50 @@ namespace SCS_Module
 
                         break;
                     case "Удалить":
-                        foreach (var i in Schemes_Editor.wires)
+                        foreach (Wire i in Schemes_Editor.wires)
                         {
                             if (i.firstEquip.localID == ((drawer)movable).localID)
                             {
-                                var t = ((Wire)movable);
-                                if (t.firstEquip is inboxes)
+                                if (i.firstEquip is inboxes)
                                 {
-                                    ((inboxes)t.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherFirst.interfaceType.id)]--;
+                                    ((inboxes)i.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)i.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherFirst.interfaceType.id)]--;
                                 }
-                                if (t.secondEquip is inboxes)
+                                if (i.secondEquip is inboxes)
                                 {
-                                    ((inboxes)t.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherSecond.interfaceType.id)]--;
+                                    ((inboxes)i.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)i.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id ==i.OtherSecond.interfaceType.id)]--;
                                 }
-                                Schemes_Editor.wires.RemoveAll(x => x.localID == t.localID);
+
+                                if (i.firstEquip is free)
+                                {
+                                    ((free)i.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)i.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherFirst.interfaceType.id)]--;
+                                }
+                                if (i.secondEquip is free)
+                                {
+                                    ((free)i.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)i.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherSecond.interfaceType.id)]--;
+                                }
+                                Schemes_Editor.wires.RemoveAll(x => x.localID == i.localID);
                             }
                             if (i.secondEquip.localID == ((drawer)movable).localID)
                             {
-                                var t = ((Wire)movable);
-                                if (t.firstEquip is inboxes)
+                                if (i.firstEquip is inboxes)
                                 {
-                                    ((inboxes)t.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherFirst.interfaceType.id)]--;
+                                    ((inboxes)i.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)i.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherFirst.interfaceType.id)]--;
                                 }
-                                if (t.secondEquip is inboxes)
+                                if (i.secondEquip is inboxes)
                                 {
-                                    ((inboxes)t.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherSecond.interfaceType.id)]--;
+                                    ((inboxes)i.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)i.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherSecond.interfaceType.id)]--;
                                 }
-                                Schemes_Editor.wires.RemoveAll(x => x.localID == t.localID);
+
+
+                                if (i.firstEquip is free)
+                                {
+                                    ((free)i.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)i.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherFirst.interfaceType.id)]--;
+                                }
+                                if (i.secondEquip is free)
+                                {
+                                    ((free)i.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)i.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == i.OtherSecond.interfaceType.id)]--;
+                                }
+                                Schemes_Editor.wires.RemoveAll(x => x.localID == i.localID);
                             }
                             Schemes_Editor.mainWorkList.RemoveAll(x => x.localID == ((drawer)movable).localID);
                         }
@@ -529,6 +585,16 @@ namespace SCS_Module
                         if (t.secondEquip is inboxes)
                         {
                             ((inboxes)t.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherSecond.interfaceType.id)]--;
+                        }
+
+
+                        if (t.firstEquip is free)
+                        {
+                            ((free)t.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)t.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherFirst.interfaceType.id)]--;
+                        }
+                        if (t.secondEquip is free)
+                        {
+                            ((free)t.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((free)t.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherSecond.interfaceType.id)]--;
                         }
                         Schemes_Editor.wires.RemoveAll(x => x.localID == t.localID);
                         break;

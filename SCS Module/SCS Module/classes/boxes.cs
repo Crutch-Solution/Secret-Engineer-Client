@@ -8,11 +8,15 @@ namespace SCS_Module
 {
     public class boxes : drawer
     {
+        int offsetConnection = 1000;
+
+
         public int units = -1;
         public float unitSize;
         public List<inboxes> equipInside = new List<inboxes>();
         public List<int> positions = new List<int>(); //from upper
         public List<int> unitsSeized = new List<int>();
+
         public override bool inside(Point a, int scheme)
         {
             
@@ -239,12 +243,75 @@ namespace SCS_Module
 
         public override void drawPlaceExp(ref string result)
         {
+            int localSheetIndex = 0;
+            List<Equipment.VectorPic> list = new List<Equipment.VectorPic>();
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId).inPlacementScheme != null)
+                list.Add(Schemes_Editor.mainList.Find(x => x.id == globalId).inPlacementScheme.copy());
+            else
+                list.Add(null);
 
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId).inConnectionScheme != null)
+                list.Add(Schemes_Editor.mainList.Find(x => x.id == globalId).inConnectionScheme.copy());
+            else
+                list.Add(null);
+
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId).inBox != null)
+                list.Add(Schemes_Editor.mainList.Find(x => x.id == globalId).inBox.copy());
+            else
+                list.Add(null);
+
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId).inStructural != null)
+                list.Add(Schemes_Editor.mainList.Find(x => x.id == globalId).inStructural.copy());
+            else
+                list.Add(null);
+
+            if (list[localSheetIndex] != null)
+            {
+                Equipment.Point WidthHeight = list[localSheetIndex].GetProp();
+                float Xprop = WidthHeight.X / (scales[localSheetIndex].X * 1.0f),
+                    Yprop = WidthHeight.Y / (scales[localSheetIndex].Y * 1.0f);
+                list[localSheetIndex].divide(Xprop, Yprop);
+
+                //foreach (var j in list[localSheetIndex].circles)
+                //    g.DrawEllipse(Pens.Black, locations[localSheetIndex].X + (float)j.center.X - (float)j.radiusX, locations[localSheetIndex].Y + (float)j.center.Y - (float)j.radiusY, (float)j.radiusX * 2, (float)j.radiusY * 2);
+
+                foreach (var j in list[localSheetIndex].polyLines)
+                {
+                    for (int k = 0; k < j.Count - 1; k++)
+                    {
+                        result += AutocadExport.drawLine(j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        //g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                    }
+                }
+
+
+
+            }
+
+            foreach (inboxes i in equipInside)
+            {
+                i.locations[localSheetIndex] = locations[localSheetIndex];
+                i.scales[localSheetIndex] = scales[localSheetIndex];
+            }
+
+            //по надписи
+            StringFormat f = new StringFormat();
+            f.Alignment = StringAlignment.Center;
+            //найти название
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
+            {
+                //  string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                result += AutocadExport.drawText(new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), labels[localSheetIndex]);
+             //   g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
+
+            }
         }
 
         public override void drawConExp(ref string result)
         {
-
+            int index = 1;
+            result += AutocadExport.drawrect(new Rectangle(offsetConnection+locations[index].X, locations[index].Y, scales[index].X, scales[index].Y));
+            result += AutocadExport.drawText(new RectangleF(offsetConnection + locations[index].X, locations[index].Y - 30, scales[index].X, 30), labels[index]);
         }
 
         public override void drawBoxExp(ref string result)
@@ -257,8 +324,8 @@ namespace SCS_Module
 
 
 
-            result += AutocadExport.drawrect(new Rectangle(locations[scheme].X, locations[scheme].Y, scales[scheme].X, scales[scheme].Y));
-            result += AutocadExport.drawrect(new Rectangle(locations[scheme].X + 20, locations[scheme].Y + 30, scales[scheme].X - 40, scales[scheme].Y - 60));
+            result += AutocadExport.drawrect(new Rectangle(offsetConnection*2 + locations[scheme].X, locations[scheme].Y, scales[scheme].X, scales[scheme].Y));
+            result += AutocadExport.drawrect(new Rectangle(offsetConnection * 2 + locations[scheme].X + 20, locations[scheme].Y + 30, scales[scheme].X - 40, scales[scheme].Y - 60));
 
             unitSize = (scales[scheme].Y - 60) / (units * 1.0f);
 
@@ -268,7 +335,7 @@ namespace SCS_Module
             {
                 string boxName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
 
-                result += AutocadExport.drawText(new Rectangle(locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), boxName);
+                result += AutocadExport.drawText(new Rectangle(offsetConnection * 2 + locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), boxName);
 
             }
 
@@ -280,23 +347,23 @@ namespace SCS_Module
 
            Point lu = new Point(locations[scheme].X+scales[scheme].X+30, locations[scheme].Y);
             //heaader
-            result += AutocadExport.drawText(lu.X, lu.Y, one, heigth, "Поз");
-            result += AutocadExport.drawText(lu.X+one, lu.Y, two, heigth, "Наименование");
-            result += AutocadExport.drawText(lu.X+one+two, lu.Y, three, heigth, "Описание");
+            result += AutocadExport.drawText(offsetConnection * 2 + lu.X, lu.Y, one, heigth, "Поз");
+            result += AutocadExport.drawText(offsetConnection * 2 + lu.X+one, lu.Y, two, heigth, "Наименование");
+            result += AutocadExport.drawText(offsetConnection * 2 + lu.X+one+two, lu.Y, three, heigth, "Описание");
 
             for (int i = 0; i < equipInside.Count + 2; i++)
-                result += AutocadExport.drawLine(lu.X, lu.Y + heigth * i, lu.X + total, lu.Y + heigth * i);
+                result += AutocadExport.drawLine(offsetConnection * 2 + lu.X, lu.Y + heigth * i, offsetConnection * 2 + lu.X + total, lu.Y + heigth * i);
 
-            result += AutocadExport.drawLine(lu.X, lu.Y, lu.X, lu.Y+heigth* (equipInside.Count + 1));
-            result += AutocadExport.drawLine(lu.X+one, lu.Y, lu.X + one, lu.Y + heigth * (equipInside.Count + 1));
-            result += AutocadExport.drawLine(lu.X + one+two, lu.Y, lu.X + one + two, lu.Y + heigth * (equipInside.Count + 1));
-            result += AutocadExport.drawLine(lu.X + one + two+three, lu.Y, lu.X + one + two + three, lu.Y + heigth * (equipInside.Count + 1));
+            result += AutocadExport.drawLine(offsetConnection * 2 + lu.X, lu.Y, offsetConnection * 2 + lu.X, lu.Y+heigth* (equipInside.Count + 1));
+            result += AutocadExport.drawLine(offsetConnection * 2 + lu.X+one, lu.Y, offsetConnection * 2 + lu.X + one, lu.Y + heigth * (equipInside.Count + 1));
+            result += AutocadExport.drawLine(offsetConnection * 2 + lu.X + one+two, lu.Y, offsetConnection * 2 + lu.X + one + two, lu.Y + heigth * (equipInside.Count + 1));
+            result += AutocadExport.drawLine(offsetConnection * 2 + lu.X + one + two+three, lu.Y, offsetConnection * 2 + lu.X + one + two + three, lu.Y + heigth * (equipInside.Count + 1));
 
             for (int i = 1; i < equipInside.Count + 1; i++)
             {
-                result += AutocadExport.drawText(lu.X, lu.Y + i*heigth, one, heigth, i.ToString());
-                result += AutocadExport.drawText(lu.X + one, lu.Y + i * heigth, two, heigth, equipInside[i - 1].labels[scheme]);
-                result += AutocadExport.drawText(lu.X + one + two, lu.Y + i * heigth, three, heigth, Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description);
+                result += AutocadExport.drawText(offsetConnection * 2 + lu.X, lu.Y + i*heigth, one, heigth, i.ToString());
+                result += AutocadExport.drawText(offsetConnection * 2 + lu.X + one, lu.Y + i * heigth, two, heigth, equipInside[i - 1].labels[scheme]);
+                result += AutocadExport.drawText(offsetConnection * 2 + lu.X + one + two, lu.Y + i * heigth, three, heigth, Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description);
 
 
 
@@ -319,7 +386,9 @@ namespace SCS_Module
 
         public override void drawStrExp(ref string result)
         {
-
+            int index = 3;
+            result += AutocadExport.drawrect(new Rectangle(offsetConnection * 3 + locations[index].X, locations[index].Y, scales[index].X, scales[index].Y));
+            result += AutocadExport.drawText(new RectangleF(offsetConnection * 3 + locations[index].X, locations[index].Y - 30, scales[index].X, 30), labels[index]);
         }
 
         public override void rebuildVinosku(int a)

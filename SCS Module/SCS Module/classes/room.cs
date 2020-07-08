@@ -15,9 +15,15 @@ namespace SCS_Module
         {
             locations[index] = new System.Drawing.Rectangle(a.X, a.Y, locations[index].Width, locations[index].Height);
         }
+        public void drawExp(ref string a, int index)
+        {
+            if (index == 2) return;
+            a += AutocadExport.drawrect(locations[index]);
+            a += AutocadExport.drawText(new RectangleF(locations[index].X, locations[index].Y - 30, locations[index].Width, 30), labels[index]);
+        }
         public void draw(Graphics g, int index)
         {
-            g.DrawRectangle(Pens.Red, locations[index]);
+            g.DrawRectangle(Pens.Black, locations[index]);
             StringFormat f = new StringFormat();
             f.Alignment = StringAlignment.Center;
 

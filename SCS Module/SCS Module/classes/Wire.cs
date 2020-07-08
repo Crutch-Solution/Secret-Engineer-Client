@@ -26,7 +26,67 @@ namespace SCS_Module
         public bool isFirstSeized = false, isSecondSeized = false;
 
         public drawer firstEquip = null, secondEquip = null;
+        public void drawPlaceExp(ref string a)
+        {
+            int index = 0;
+            if (points.Count < 2) return;
+            for (int i = 0; i < points[index].Count - 1; i++)
+                a+= AutocadExport.drawLine(points[index][i], points[index][i + 1]);
 
+            if (vinoska != null && vinoska[index] != null)
+            {
+                a += AutocadExport.drawLine(vinoska[index].startPoint, vinoska[index].vertex1);
+                a += AutocadExport.drawLine(vinoska[index].vertex1, vinoska[index].vertex2);
+
+                if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                else
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+
+            }
+        }
+         public void drawConExp(ref string a)
+        {
+            int index = 1;
+            if (points.Count < 2) return;
+            for (int i = 0; i < points[index].Count - 1; i++)
+                a += AutocadExport.drawLine(points[index][i], points[index][i + 1]);
+
+            if (vinoska != null && vinoska[index] != null)
+            {
+                a += AutocadExport.drawLine(vinoska[index].startPoint, vinoska[index].vertex1);
+                a += AutocadExport.drawLine(vinoska[index].vertex1, vinoska[index].vertex2);
+
+                if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                else
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+
+            }
+        }
+        public void drawBoxExp(ref string a)
+        {
+
+        }
+        public void drawStrExp(ref string a)
+        {
+            int index = 3;
+            if (points.Count < 2) return;
+            for (int i = 0; i < points[index].Count - 1; i++)
+                a += AutocadExport.drawLine(points[index][i], points[index][i + 1]);
+
+            if (vinoska != null && vinoska[index] != null)
+            {
+                a += AutocadExport.drawLine(vinoska[index].startPoint, vinoska[index].vertex1);
+                a += AutocadExport.drawLine(vinoska[index].vertex1, vinoska[index].vertex2);
+
+                if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                else
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+
+            }
+        }
 
         public void createVinosku(Point p, int index)
         {

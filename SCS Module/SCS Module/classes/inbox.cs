@@ -9,6 +9,10 @@ namespace SCS_Module
 {
     public class inboxes : drawer
     {
+        int offsetConnection = 1000;
+
+
+
 
         public List<int> seized = new List<int>();
         public bool isShowingOnConnectionScheme = true;
@@ -270,8 +274,8 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        //        result += $"pline {j[k].X + locations[localSheetIndex].X+1500},{-j[k].Y - locations[localSheetIndex].Y} {j[k + 1].X + locations[localSheetIndex].X + 1500},{j[k + 1].Y + locations[localSheetIndex].Y} \r\n";
-                        //   g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        result += AutocadExport.drawLine(j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                       // g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }
 
@@ -280,9 +284,9 @@ namespace SCS_Module
                 //найти название
                 if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
                 {
-                    string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                    //         result += $"text {locations[localSheetIndex].X},{-locations[localSheetIndex].Y + 30} 0 {roomName}\r\n";
-                    //    g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
+                    // string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                    result += AutocadExport.drawText(new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), labels[localSheetIndex]);
+                    //g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
 
                 }
 
@@ -327,7 +331,7 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        result += AutocadExport.drawLine(locations[localSheetIndex].X+j[k].X, locations[localSheetIndex].Y + j[k].Y, locations[localSheetIndex].X + j[k+1].X, locations[localSheetIndex].Y + j[k+1].Y);
+                        result += AutocadExport.drawLine(offsetConnection*2+locations[localSheetIndex].X+j[k].X, locations[localSheetIndex].Y + j[k].Y, offsetConnection * 2 + locations[localSheetIndex].X + j[k+1].X, locations[localSheetIndex].Y + j[k+1].Y);
                     //    result += $"pline {j[k].X + locations[localSheetIndex].X},{-j[k].Y - locations[localSheetIndex].Y} {j[k + 1].X + locations[localSheetIndex].X},{-j[k + 1].Y - locations[localSheetIndex].Y} \r\n";
                         // g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
@@ -342,7 +346,32 @@ namespace SCS_Module
 
         public override void drawStrExp(ref string result)
         {
+            int localSheetIndex = 3;
+            if (!inbox) return;
+            result += AutocadExport.drawrect(new  Rectangle(offsetConnection * 3 + locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
+            //g.DrawLines(new Pen(Brushes.Black, 3), new Point[] { locations[localSheetIndex],
+            //    new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y),
+            //    new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
+            //    new Point(locations[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
+            //    locations[localSheetIndex] });
 
+
+            StringFormat f = new StringFormat();
+            f.Alignment = StringAlignment.Center;
+            f.LineAlignment = StringAlignment.Center;
+            //найти название
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
+            {
+                result += AutocadExport.drawText(new RectangleF(offsetConnection * 3 + locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y), labels[localSheetIndex]);
+              //  g.DrawString(labels[localSheetIndex], new Font("Arial", 7), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
+
+            }
+
+            //if (vinoska != null)
+            //{
+            //    g.DrawLines(Pens.Blue, new Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
+            //    g.DrawString(vinoska.text, new Font("Arial", 14), Brushes.DarkGreen, vinoska.vertex1.X, vinoska.vertex1.Y - 30);
+            //}
         }
 
         public override void rebuildVinosku(int index)

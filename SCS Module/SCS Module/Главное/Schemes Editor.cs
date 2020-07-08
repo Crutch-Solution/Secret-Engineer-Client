@@ -454,6 +454,16 @@ namespace SCS_Module
                 i.drawBoxExp(ref result);
                 i.drawStrExp(ref result);
             }
+            foreach(var i in wires)
+            {
+                i.drawPlaceExp(ref result);
+                i.drawConExp(ref result);
+                i.drawBoxExp(ref result);
+                i.drawStrExp(ref result);
+            }
+            foreach (var i in rooms)
+                for (int j = 0; j < 4; j++)
+                    i.drawExp(ref result, j);
             SaveFileDialog file = new SaveFileDialog();
             file.Filter = "Script files (*.scr)|*.scr";
             if(file.ShowDialog() == DialogResult.OK)
