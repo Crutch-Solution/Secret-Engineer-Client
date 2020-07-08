@@ -169,19 +169,8 @@ namespace SCS_Module
                                 {
                                     Prev = new Point(e.Location.X - ((inboxes)Schemes_Editor.mainWorkList[i]).locations[localSheet].X, e.Location.Y - ((inboxes)Schemes_Editor.mainWorkList[i]).locations[localSheet].Y);
                                     Mode = modeConnection.dragShkafnoe;
-                                    hasRect = false;
                                     movable = Schemes_Editor.mainWorkList[i];
-                                    foreach (boxes j in Schemes_Editor.mainWorkList.FindAll(x => x is boxes))
-                                    {
-                                        int pos = j.equipInside.IndexOf(j.equipInside.Find(x => x.localID == movable.localID));
-                                        if (pos != -1)
-                                        {
-                                            j.equipInside.RemoveAt(pos);
-                                            j.positions.RemoveAt(pos);
-                                            j.unitsSeized.RemoveAt(pos);
-                                        }
-                                    }
-                                  ((inboxes)Schemes_Editor.mainWorkList[i]).inbox = false;
+
                                 }
                                 if (Schemes_Editor.mainWorkList[i] is boxes)
                                 {
@@ -488,7 +477,7 @@ namespace SCS_Module
 
 
                     case modeConnection.dragVertex:
-                        Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X - 5, e.Location.Y - 5);
+                        Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X, e.Location.Y);
                         break;
 
                     case modeConnection.moveRoom:

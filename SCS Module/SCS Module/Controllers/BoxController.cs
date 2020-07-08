@@ -77,7 +77,8 @@ namespace SCS_Module
                         foreach (var i in Schemes_Editor.mainWorkList)
                         {
                             if (i is inboxes && ((inboxes)i).inbox) continue;
-                            Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
+                            if (i is boxes || i is inboxes)
+                                Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawRectangle(Pens.Blue, i.locations[Schemes_Editor.sheetIndex].X - 1, i.locations[Schemes_Editor.sheetIndex].Y - 1, i.scales[Schemes_Editor.sheetIndex].X + 2, i.scales[Schemes_Editor.sheetIndex].Y + 2);
                         }
                         break;
 
@@ -375,7 +376,7 @@ namespace SCS_Module
                             //    continue;
                             if (Schemes_Editor.mainWorkList[i] is inboxes && ((inboxes)Schemes_Editor.mainWorkList[i]).inbox)
                                 continue;
-                            else
+                            else if (Schemes_Editor.mainWorkList[i] is boxes)
                             {
                                 int a = Schemes_Editor.mainWorkList[i].locations[2].X, b = Schemes_Editor.mainWorkList[i].locations[2].Y, c = Schemes_Editor.mainWorkList[i].locations[2].X + Schemes_Editor.mainWorkList[i].scales[2].X, d = Schemes_Editor.mainWorkList[i].locations[2].Y + Schemes_Editor.mainWorkList[i].scales[2].Y;
                                 if (Schemes_Editor.distance(new Point(a, b), e.Location) < 20)

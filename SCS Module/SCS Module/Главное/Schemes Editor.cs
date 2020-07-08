@@ -332,10 +332,11 @@ namespace SCS_Module
                 button2.Text = "Режим редактирования кабеля выключен";
                 button2.BackColor = System.Drawing.Color.Pink;
             };
-            BoxController.draw();
-            StructuralController.draw();
-            PlacementController.draw();
-            ConnectionController.draw();
+            if(sheetIndex==0) PlacementController.draw();
+            if (sheetIndex == 2) BoxController.draw();
+            if (sheetIndex == 3) StructuralController.draw();
+
+            if (sheetIndex == 1) ConnectionController.draw();
         }
         static public double distance(Equipment.Point a, Equipment.Point b)
         {
@@ -401,7 +402,7 @@ namespace SCS_Module
             RoomCreator cr = new RoomCreator();
             if (cr.ShowDialog() == DialogResult.OK)
             {
-                rooms.Add(new Room() { roomName = cr.roomName });
+                rooms.Add(new Room() { labels = new string[] {cr.roomName, cr.roomName , cr.roomName , cr.roomName } });
                 PlacementController.draw();
                 ConnectionController.draw();
                 StructuralController.draw();

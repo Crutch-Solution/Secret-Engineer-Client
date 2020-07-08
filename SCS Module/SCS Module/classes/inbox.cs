@@ -193,7 +193,7 @@ namespace SCS_Module
         public override void drawStr(Graphics g)
         {
             int localSheetIndex = 3;
-
+            if (!inbox) return;
             g.DrawLines(new Pen(Brushes.Black, 3), new Point[] { locations[localSheetIndex],
                 new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y),
                 new Point(locations[localSheetIndex].X + scales[localSheetIndex].X, locations[localSheetIndex].Y + scales[localSheetIndex].Y),
@@ -207,7 +207,7 @@ namespace SCS_Module
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                g.DrawString(labels[localSheetIndex], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
+                g.DrawString(labels[localSheetIndex], new Font("Arial", 7), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
 
             }
 

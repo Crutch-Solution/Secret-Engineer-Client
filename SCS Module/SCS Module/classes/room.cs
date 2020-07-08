@@ -10,7 +10,7 @@ namespace SCS_Module
     public class Room
     {
         public Rectangle[] locations = new Rectangle[] { new Rectangle(0, 0, 200, 200), new Rectangle(0, 0, 200, 200), new Rectangle(), new System.Drawing.Rectangle(0, 0, 200, 200) };
-        public string roomName;
+        public string[] labels = null;
         public void move(Point a, int index)
         {
             locations[index] = new System.Drawing.Rectangle(a.X, a.Y, locations[index].Width, locations[index].Height);
@@ -21,7 +21,7 @@ namespace SCS_Module
             StringFormat f = new StringFormat();
             f.Alignment = StringAlignment.Center;
 
-            g.DrawString(roomName, new Font("Arial", 14), Brushes.DarkRed, new RectangleF(locations[index].X, locations[index].Y - 30, locations[index].Width, 30), f);
+            g.DrawString(labels[index], new Font("Arial", 14), Brushes.DarkRed, new RectangleF(locations[index].X, locations[index].Y - 30, locations[index].Width, 30), f);
         }
         public bool inside(Point a, int index)
         {

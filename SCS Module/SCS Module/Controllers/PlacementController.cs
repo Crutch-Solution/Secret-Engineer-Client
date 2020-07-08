@@ -17,7 +17,8 @@ namespace SCS_Module
         moveVinosku,
         constantMove,
         moveRoom,
-        dragFree
+        dragFree,
+        dragVertex
     }
     public static class PlacementController
     {
@@ -51,16 +52,6 @@ namespace SCS_Module
                 {
                     if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
                     {
-                        if (Schemes_Editor.mainWorkList[i] is inboxes)
-                        {
-
-                            movable = Schemes_Editor.mainWorkList[i];
-
-                            isDrawSelected = true;
-                            ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Изменить название", handler) });
-                            menushka.Show(father.pictureBox3, e.Location);
-                            return;
-                        }
                         if (Schemes_Editor.mainWorkList[i] is boxes)
                         {
                             movable = Schemes_Editor.mainWorkList[i];
@@ -86,7 +77,7 @@ namespace SCS_Module
                     {
                         isRoomSelected = true;
                         movable = Schemes_Editor.rooms[i];
-                        ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Изменить название", handler) });
+                        ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Удалить", handler), new MenuItem("Изменить название", handler) });
                         menushka.Show(father.pictureBox3, e.Location);
                         return;
                     }
@@ -94,7 +85,7 @@ namespace SCS_Module
                 if (isWireSelected)
                 {
                     movable = Schemes_Editor.wires[SelectedWireIndex];
-                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Копировать", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
+                    ContextMenu menushka = new ContextMenu(new MenuItem[] { new MenuItem("Добавить выноску", handler), new MenuItem("Удалить", handler), new MenuItem("Удалить узел", handler), new MenuItem("Изменить название", handler) });
                     menushka.Show(father.pictureBox3, e.Location);
                     return;
                 }
@@ -106,6 +97,30 @@ namespace SCS_Module
                     case modePlacement.doNothing_NOSCALEMODE:
                         movable = null;
                         isRoomSelected = false;
+                        if (isWireSelected)
+                        {
+                            var t = Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
+                            if (t.isExists)
+                            {
+                                VertexNumber = t.ExistingIndex;
+                                if (VertexNumber != -1)
+                                {
+                                    Mode = modePlacement.dragVertex;
+                                    movable = 1;
+                                }
+                            }
+                            else //создать новую опорную точку
+                            {
+                                VertexNumber = Schemes_Editor.wires[SelectedWireIndex].insertPoint(t.vertex, localSheet);
+                                if (VertexNumber != -1)
+                                {
+                                    Mode = modePlacement.dragVertex;
+                                    movable = 1;
+                                }
+                            }
+                        }
+                        if (movable != null) break;
+
                         for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                         {
                             if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -276,13 +291,28 @@ namespace SCS_Module
             }
             if (isRoomSelected)
             {
-     case "Изменить название":
-                        RoomCreator cr = new RoomCreator();
-                if (cr.ShowDialog() == DialogResult.OK)
+                switch (((MenuItem)sender).Text)
                 {
-                    element.labels[localSheet] = cr.roomName;
+                    case "Изменить название":
+                        RoomCreator cr = new RoomCreator();
+                        if (cr.ShowDialog() == DialogResult.OK)
+                        {
+                            element.labels[localSheet] = cr.roomName;
+                        }
+                        break;
+                    case "Удалить":
+                        var t = ((Wire)movable);
+                        if (t.firstEquip is inboxes)
+                        {
+                            ((inboxes)t.firstEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.firstEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherFirst.interfaceType.id)]--;
+                        }
+                        if (t.secondEquip is inboxes)
+                        {
+                            ((inboxes)t.secondEquip).seized[Schemes_Editor.mainList.Find(x => x.id == ((inboxes)t.secondEquip).globalId).compatibilities.FindIndex(x => x.interfaceType.id == t.OtherSecond.interfaceType.id)]--;
+                        }
+                        Schemes_Editor.wires.RemoveAll(x => x.localID == t.localID);
+                        break;
                 }
-                break;
             }
             if (isWireSelected)
             {
@@ -328,6 +358,9 @@ namespace SCS_Module
             mousePosition = e.Location;
             switch (Mode)
             {
+                case modePlacement.dragVertex:
+                    Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X, e.Location.Y);
+                    break;
                 case modePlacement.moveRoom:
                     movable.move(new Point(e.X-Prev.X, e.Y-Prev.Y), localSheet);
                     break;
@@ -523,6 +556,9 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
+                case modePlacement.dragVertex:
+                    Mode = modePlacement.doNothing_NOSCALEMODE;
+                    break;
                 case modePlacement.moveRoom:
                     Mode = modePlacement.doNothing_NOSCALEMODE;
                     break;
