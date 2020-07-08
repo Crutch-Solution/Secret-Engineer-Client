@@ -112,20 +112,6 @@ namespace SCS_Module
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         private static void handler(object sender, EventArgs e)
         {
             switch (((MenuItem)sender).Text)
@@ -475,10 +461,21 @@ namespace SCS_Module
                         boxForInser.positions.Add(indexToInsertInBox);
                         boxForInser.unitsSeized.Add(movable.numberOfUnits);
                         ((inboxes)movable).inbox = true;
+
+
+                        movable.createVinosku(localSheet);
+                        
+                   //     movable.labels[localSheet] = (indexToInsertInBox + 1).ToString();
+                        element = movable;
+                        Mode = modeShkaf.moveVinosku;
                     }
-                    else ((inboxes)movable).inbox = false;
+                    else
+                    {
+                        ((inboxes)movable).inbox = false;
+                        Mode = modeShkaf.doNothing_NOSCALEMODE;
+                    }
                     hasRect = false;
-                    Mode = modeShkaf.doNothing_NOSCALEMODE;
+
                     break;
                 case modeShkaf.scaleSomething:
                     Mode = modeShkaf.doNothing_SCALEMODE;

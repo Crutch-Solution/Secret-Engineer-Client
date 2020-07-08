@@ -57,7 +57,7 @@ namespace SCS_Module
 
             Point lu = new Point(locations[scheme].X + scales[scheme].X + offs, locations[scheme].Y - offs);
             //heaader
-            g.DrawString("№ поз.", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y, one, 30), f);
+            g.DrawString("Поз", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y, one, 30), f);
             g.DrawString("Наименование", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y, two, 30), f);
             g.DrawString("Описание", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y, three, 30), f);
             //lines
@@ -73,7 +73,7 @@ namespace SCS_Module
             f.Alignment = StringAlignment.Center;
             for (int i = 1; i < equipInside.Count + 1; i++)
             {
-                g.DrawString(i.ToString(), new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y + 30 * i, one, 30), f);
+                g.DrawString((positions[i-1]+1).ToString(), new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y + 30 * i, one, 30), f);
                 g.DrawString(equipInside[i - 1].labels[scheme], new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
                 g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
             }
@@ -98,16 +98,18 @@ namespace SCS_Module
             if (units == -1)
                 units = Convert.ToInt32(target.properties["Количество юнитов (шт)"]);
             int i = 3;
-            g.DrawRectangle(Pens.Black, locations[i].X, locations[i].Y, scales[i].X, scales[i].Y);
+          //  g.DrawRectangle(Pens.Black, locations[i].X, locations[i].Y, scales[i].X, scales[i].Y);
             //    g.DrawRectangle(Pens.Black, locations[i].X + 20, locations[i].Y + 30, scales[i].X - 40, scales[i].Y - 60);
-            unitSize = (scales[i].Y - 60) / (units * 1.0f);
-
+            // unitSize = (scales[i].Y - 60) / (units * 1.0f);
+            unitSize = 40;
+            scales[i] = new Point(scales[i].X,(int)(unitSize * equipInside.Count + 40));
+            g.DrawRectangle(Pens.Black, locations[i].X, locations[i].Y, scales[i].X, scales[i].Y);
             for (int j = 0; j < equipInside.Count; j++)
             {
                 //equipInside[j].locations[i] = new Point(locations[i].X + 20, (int)(locations[i].Y + 30 + positions[j] * unitSize));
                 //equipInside[j].scales[i] = new Point(scales[i].X - 40, (int)unitSize-30);////
-                equipInside[j].locations[i] = new Point(locations[i].X + 20, (int)(locations[i].Y + 30 + j * unitSize));
-                equipInside[j].scales[i] = new Point(scales[i].X - 40, (int)unitSize - 30);////
+                equipInside[j].locations[i] = new Point(locations[i].X + 20, (int)(locations[i].Y + 20 + j * unitSize));
+                equipInside[j].scales[i] = new Point(scales[i].X - 40, (int)unitSize - 20);////
 
             }
 
@@ -115,8 +117,8 @@ namespace SCS_Module
             {
                 for (int j = 1; j < equipInside.Count; j++)
                 {
-                    g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 30 + unitSize * j - 28, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 30 + (unitSize * j - 2));
-                    g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 30 + (unitSize) * j - 2, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 30 + (unitSize * j - 28));
+                    g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + unitSize * j - 18, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 2));
+                    g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + (unitSize) * j - 2, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 18));
                 }
             }
 

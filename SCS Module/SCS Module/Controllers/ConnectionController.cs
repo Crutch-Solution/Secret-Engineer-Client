@@ -126,72 +126,7 @@ namespace SCS_Module
                                 }
                                 else if (Schemes_Editor.mainWorkList[i] is free)
                                 {
-                                    /*                  List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
-
-                                                      for (int j = 0, jj = 0; j < list.Count; j++, jj++)
-                                                          if (((free)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
-                                                          {
-                                                              list.RemoveAt(jj);
-                                                              jj--;
-                                                          }
-                                                      if (list.Count == 0)
-                                                      {
-                                                          MessageBox.Show("Отсутствует свободный интерфейс");
-                                                      }
-                                                      else
-                                                      {
-                                                          if (!targetWire.isFirstSeized && !targetWire.isSecondSeized)
-                                                          {
-                                                              interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst, targetWire.MyOwnSecond);
-                                                              if (sel.ShowDialog() == DialogResult.OK)
-                                                              {
-                                                                  var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
-                                                                  int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
-                                                                  if (targetWire.MyOwnFirst.interfaceType.id == sel.selectedId)
-                                                                  {
-                                                                      targetWire.isFirstSeized = true;
-                                                                      targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
-                                                                  }
-                                                                  else
-                                                                  {
-                                                                      targetWire.isSecondSeized = true;
-                                                                      targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
-                                                                  }
-                                                                  ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                                                  //    MessageBox.Show("Выберите второе оборудование");
-                                                              }
-
-                                                          }
-                                                          else if (!targetWire.isFirstSeized)
-                                                          {
-                                                              interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
-                                                              if (sel.ShowDialog() == DialogResult.OK)
-                                                              {
-                                                                  var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
-                                                                  int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
-                                                                  ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                                                  targetWire.isFirstSeized = true;
-                                                                  targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
-                                                                  Mode = modeConnection.doNothing_NOSCALEMODE;
-
-                                                              }
-                                                          }
-
-                                                          else if (!targetWire.isSecondSeized)
-                                                          {
-                                                              interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
-                                                              if (sel.ShowDialog() == DialogResult.OK)
-                                                              {
-                                                                  var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
-                                                                  int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
-                                                                  ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                                                  targetWire.isSecondSeized = false;
-                                                                  targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
-                                                                  Mode = modeConnection.doNothing_NOSCALEMODE;
-                                                                  targetWire.createPoints();
-                                                              }
-                                                          }
-                                                      }*/
+                              
                                 }
                                 else
                                 {
@@ -357,7 +292,7 @@ namespace SCS_Module
             {
                 ////////////////
                 movable = null;
- 
+                isDrawSelected = false;
                 for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                 {
                     if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -585,7 +520,6 @@ namespace SCS_Module
                                 break;
                             }
                         }
-                        if (indexToSurround != -1) break;
 
                         if (indexToSurround != -1 || isWireSelected) break;
 
@@ -973,7 +907,7 @@ namespace SCS_Module
                         StringFormat f = new StringFormat();
                         f.Alignment = StringAlignment.Center;
                         f.LineAlignment = StringAlignment.Center;
-                        Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60)+50, 300, 50));
+                        Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60)+20, 300, 50));
                         iSimulator++;
                     }
                 }

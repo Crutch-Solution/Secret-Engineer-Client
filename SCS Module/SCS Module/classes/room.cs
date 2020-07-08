@@ -9,7 +9,7 @@ namespace SCS_Module
 {
     public class Room
     {
-        public System.Drawing.Rectangle[] locations = new System.Drawing.Rectangle[] { new System.Drawing.Rectangle(0, 0, 200, 200), new System.Drawing.Rectangle(0, 0, 200, 200), new System.Drawing.Rectangle(), new System.Drawing.Rectangle(0, 0, 200, 200) };
+        public Rectangle[] locations = new Rectangle[] { new Rectangle(0, 0, 200, 200), new Rectangle(0, 0, 200, 200), new Rectangle(), new System.Drawing.Rectangle(0, 0, 200, 200) };
         public string roomName;
         public void move(Point a, int index)
         {

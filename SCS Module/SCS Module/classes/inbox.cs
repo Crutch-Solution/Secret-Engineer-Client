@@ -39,10 +39,10 @@ namespace SCS_Module
         }
         public override void drawBox(Graphics g)
         {
-            if(labels == null)
+            if (labels == null)
             {
                 string name = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                labels = new string[] { name , name , name , name };
+                labels = new string[] { name, name, name, name };
             }
             int localSheetIndex = 2;
             List<Equipment.VectorPic> list = new List<Equipment.VectorPic>();
@@ -84,13 +84,35 @@ namespace SCS_Module
                     }
                 }
             }
-            if (vinoska != null && vinoska[localSheetIndex]!=null)
+            if (vinoska != null && vinoska[localSheetIndex] != null)
             {
-                g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
-                if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
-                    g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                if (localSheetIndex == 2 && inbox)
+                {
+                    int index = 0;
+                    //найти коробку в которой он
+                    foreach(boxes i in Schemes_Editor.mainWorkList.Where(x=>x is boxes))
+                    {
+                        int founded = i.equipInside.FindIndex(x => x.localID == localID);
+                        if (founded != -1)
+                        {
+                            index = i.positions[founded] + 1;
+                            break;
+                        }
+                    }
+                    g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
+                    if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
+                        g.DrawString(index.ToString(), new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    else
+                        g.DrawString(index.ToString(), new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                }
                 else
-                    g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                {
+                    g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
+                    if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
+                        g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    else
+                        g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                }
             }
         }
 
