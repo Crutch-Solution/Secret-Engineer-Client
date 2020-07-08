@@ -9,6 +9,10 @@ namespace SCS_Module
 {
     public class Wire
     {
+        public Vinoska[] vinoska = new Vinoska[] { null,null,null,null};
+
+        public int globalId, localID;
+
         public List<List<Point>> points = new List<List<Point>>();
 
         public List<List<Point>> vertexes = new List<List<Point>>();
@@ -22,7 +26,11 @@ namespace SCS_Module
         public drawer firstEquip = null, secondEquip = null;
 
 
-
+        public void createVinosku(Point p, int index)
+        {
+            //поиск целевого шкафа
+            vinoska[index] = new Vinoska(index.ToString(), p, new Point(p.X, p.Y-100), new Point(p.X+100, p.Y - 100));
+        }
         public void draw(Graphics g, int index, bool selected = false)
         {
             if (points.Count < 2) return;
@@ -33,6 +41,12 @@ namespace SCS_Module
             else
                 for (int i = 0; i < points[index].Count - 1; i++)
                     g.DrawLine(new Pen(Brushes.Red, 1), points[index][i], points[index][i + 1]);
+
+            if (vinoska[index] != null)
+            {
+                g.DrawLine(Pens.Black, vinoska[index].startPoint, vinoska[index].vertex1);
+                g.DrawLine(Pens.Black, vinoska[index].vertex1, vinoska[index].vertex2);
+            }
 
             //foreach (var i in vertexes[index])
             //    g.DrawEllipse(Pens.Blue, i.X - 1, i.Y - 1, 2, 2);
@@ -54,7 +68,7 @@ namespace SCS_Module
                 }
             }
         }
-        public void insertPoint(Point a, int index)
+        public int insertPoint(Point a, int index)
         {
             //найти между каким точками раположена
             points[index][0] = new Point(firstEquip.locations[index].X + firstEquip.scales[index].X / 2, firstEquip.locations[index].Y + firstEquip.scales[index].Y / 2);
@@ -77,7 +91,11 @@ namespace SCS_Module
                     for (int j = 0; j < localdistance / step; j++)
                     {
                         Point getted = new Point((int)(points[index][i].X - j * step * Math.Cos(angle)), (int)(points[index][i].Y - j * step * Math.Sin(angle)));
-
+                        if(getted.X == a.X && getted.Y == a.Y)
+                        {
+                            points[index].Insert(i + 1, a);
+                            return i + 1;
+                        }
                     }
                 }
                 else
@@ -85,10 +103,15 @@ namespace SCS_Module
                     for (int j = 0; j < localdistance / step; j++)
                     {
                        Point getted = new Point((int)(points[index][i].X + j * step * Math.Cos(angle)), (int)(points[index][i].Y + j * step * Math.Sin(angle)));
-
+                        if (getted.X == a.X && getted.Y == a.Y)
+                        {
+                            points[index].Insert(i + 1, a);
+                            return i + 1;
+                        }
                     }
                 }
             }
+            return -1;
         }
         public void rebuild(int index)
         {
@@ -139,7 +162,7 @@ namespace SCS_Module
                 }
             }
             bool firstTime = true;
-         for(int i=0;i< points[index].Count;i++)
+         for(int i=1;i< points[index].Count-1;i++)
             {
                 buff = Schemes_Editor.distance(points[index][i], target);
                 if (buff < 30 && (buff < distance || firstTime))

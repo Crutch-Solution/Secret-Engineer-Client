@@ -280,7 +280,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem добавитьСхемуToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox3;
-        private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button1;
@@ -289,5 +288,6 @@
         private System.Windows.Forms.ToolStripMenuItem добавитьКомнатуToolStripMenuItem;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem экспортСхемToolStripMenuItem;
+        public System.Windows.Forms.PictureBox pictureBox2;
     }
 }

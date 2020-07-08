@@ -39,6 +39,9 @@ namespace SCS_Module
 
 
             BoxController.father = this;
+            ConnectionController.father = this;
+            PlacementController.father = this;
+            StructuralController.father = this;
 
             bitmaps[0] = new Bitmap(pictureBox3.Width, pictureBox3.Height);
             bitmaps[1] = new Bitmap(pictureBox2.Width, pictureBox2.Height);
@@ -215,16 +218,18 @@ namespace SCS_Module
                 else if (result.isWire)
                 {
                     int current = -1;
-                    foreach (var i in mainWorkList)
+                    foreach (var i in wires)
                         if (i.localID > current)
                             current = i.localID;
                     current++;
                     if (!mainList.Exists(x => x.id == result.id))
                         mainList.Add(result);
+
+
                     if (result.compatibilities.Count == 1)
-                        wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[0] });
+                        wires.Add(new Wire() { localID = current, globalId = result.id, MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[0] });
                     else
-                        wires.Add(new Wire() { MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[1] });
+                        wires.Add(new Wire() { localID= current, globalId = result.id, MyOwnFirst = result.compatibilities[0], MyOwnSecond = result.compatibilities[1] });
                     tabControl1.SelectedIndex = 1;
                     //      MessageBox.Show("выберите начальное оборудование");
                     ConnectionController.targetWire = wires[wires.Count - 1];
