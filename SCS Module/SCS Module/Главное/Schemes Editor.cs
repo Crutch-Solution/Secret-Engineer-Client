@@ -139,7 +139,7 @@ namespace SCS_Module
                     mainList.RemoveAll(x => x.id == result.id);
                     mainList.Add(result);
 
-               
+
 
                     List<Point> real = new List<Point>();
                     for (int i = 0; i < 4; i++)

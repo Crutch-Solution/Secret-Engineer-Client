@@ -46,10 +46,12 @@ namespace SCS_Module
         static int localSheet = 1;
        public static Wire targetWire;
         public static Point pointToSurroundWire;
-
-        public static int pointNumber = -1, wireIndex = -1;
+        public static bool isWireSelected = false;
+        public static int SelectedWireIndex;
+        public static int VertexNumber;
         static public void DOWN(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             isRoomSelected = false;
             switch (Mode)
             {
@@ -72,7 +74,7 @@ namespace SCS_Module
                                 List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
 
                                 for(int j=0, jj=0; j<list.Count;j++, jj++)
-                                    if(((inboxes)Schemes_Editor.mainWorkList[i]).seized[jj]== list[j].count)
+                                    if(((inboxes)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
                                     {
                                         list.RemoveAt(jj);
                                         jj--;
@@ -83,44 +85,25 @@ namespace SCS_Module
                                 }
                                 else
                                 {
-                                    if (targetWire.first && targetWire.second)
-                                    {
-                                        interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst, targetWire.MyOwnSecond);
-                                        if (sel.ShowDialog() == DialogResult.OK)
-                                        {
-                                            var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
-                                            int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
-                                            if (targetWire.MyOwnFirst.interfaceType.id == sel.selectedId)
-                                            {
-                                                targetWire.first = false;
-                                                targetWire.firstEquip = (inboxes)Schemes_Editor.mainWorkList[i];
-                                            }
-                                            else
-                                            {
-                                                targetWire.second = false;
-                                                targetWire.secondEquip = (inboxes)Schemes_Editor.mainWorkList[i];
-                                            }
-                                            ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                        //    MessageBox.Show("Выберите второе оборудование");
-                                        }
-
-                                    }
-                                  else  if (targetWire.first)
+                                    if (!targetWire.isFirstSeized)
                                     {
                                         interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
                                         if (sel.ShowDialog() == DialogResult.OK)
                                         {
                                             var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
-                                            int biff =   Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
-                                            ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                            targetWire.first = false;
-                                            targetWire.firstEquip = (inboxes)Schemes_Editor.mainWorkList[i];
-                                            Mode = modeConnection.doNothing_NOSCALEMODE;
+                                            int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
 
+                                            targetWire.isFirstSeized = true;
+                                            targetWire.firstEquip = (inboxes)Schemes_Editor.mainWorkList[i];
+                                            targetWire.OtherFirst = item;
+
+
+                                            ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
+                                            //    MessageBox.Show("Выберите второе оборудование");
                                         }
+
                                     }
-                  
-                                 else  if (targetWire.second)
+                                    else if (!targetWire.isSecondSeized)
                                     {
                                         interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
                                         if (sel.ShowDialog() == DialogResult.OK)
@@ -128,8 +111,12 @@ namespace SCS_Module
                                             var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
                                             int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
                                             ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                            targetWire.second = false;
+
+                                            targetWire.isSecondSeized = true;
                                             targetWire.secondEquip = (inboxes)Schemes_Editor.mainWorkList[i];
+                                            targetWire.OtherSecond = item;
+
+                                            ((inboxes)Schemes_Editor.mainWorkList[i]).seized[biff]++;
                                             Mode = modeConnection.doNothing_NOSCALEMODE;
                                             targetWire.createPoints();
                                         }
@@ -139,7 +126,7 @@ namespace SCS_Module
                             }
                             else if(Schemes_Editor.mainWorkList[i] is free)
                             {
-                                List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
+              /*                  List<Equipment.Compatibility> list = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities;
 
                                 for (int j = 0, jj = 0; j < list.Count; j++, jj++)
                                     if (((free)Schemes_Editor.mainWorkList[i]).seized[jj] == list[j].count)
@@ -153,7 +140,7 @@ namespace SCS_Module
                                 }
                                 else
                                 {
-                                    if (targetWire.first && targetWire.second)
+                                    if (!targetWire.isFirstSeized && !targetWire.isSecondSeized)
                                     {
                                         interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst, targetWire.MyOwnSecond);
                                         if (sel.ShowDialog() == DialogResult.OK)
@@ -162,12 +149,12 @@ namespace SCS_Module
                                             int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
                                             if (targetWire.MyOwnFirst.interfaceType.id == sel.selectedId)
                                             {
-                                                targetWire.first = false;
+                                                targetWire.isFirstSeized = true;
                                                 targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
                                             }
                                             else
                                             {
-                                                targetWire.second = false;
+                                                targetWire.isSecondSeized = true;
                                                 targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
                                             }
                                             ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
@@ -175,7 +162,7 @@ namespace SCS_Module
                                         }
 
                                     }
-                                    else if (targetWire.first)
+                                    else if (!targetWire.isFirstSeized)
                                     {
                                         interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnFirst);
                                         if (sel.ShowDialog() == DialogResult.OK)
@@ -183,14 +170,14 @@ namespace SCS_Module
                                             var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
                                             int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
                                             ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                            targetWire.first = false;
+                                            targetWire.isFirstSeized = true;
                                             targetWire.firstEquip = (free)Schemes_Editor.mainWorkList[i];
                                             Mode = modeConnection.doNothing_NOSCALEMODE;
 
                                         }
                                     }
 
-                                    else if (targetWire.second)
+                                    else if (!targetWire.isSecondSeized)
                                     {
                                         interfaceSelector sel = new interfaceSelector(list, targetWire.MyOwnSecond);
                                         if (sel.ShowDialog() == DialogResult.OK)
@@ -198,13 +185,13 @@ namespace SCS_Module
                                             var item = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.Find(x => x.interfaceType.id == sel.selectedId);
                                             int biff = Schemes_Editor.mainList.Find(x => x.id == Schemes_Editor.mainWorkList[i].globalId).compatibilities.IndexOf(item);
                                             ((free)Schemes_Editor.mainWorkList[i]).seized[biff]++;
-                                            targetWire.second = false;
+                                            targetWire.isSecondSeized = false;
                                             targetWire.secondEquip = (free)Schemes_Editor.mainWorkList[i];
                                             Mode = modeConnection.doNothing_NOSCALEMODE;
                                             targetWire.createPoints();
                                         }
                                     }
-                                }
+                                }*/
                             }
                             else
                             {
@@ -263,6 +250,23 @@ namespace SCS_Module
                                 Prev = new Point(e.Location.X - Schemes_Editor.rooms[i].locations[localSheet].X, e.Location.Y - Schemes_Editor.rooms[i].locations[localSheet].Y);
                                 movable = Schemes_Editor.rooms[i];
                                 Mode = modeConnection.moveRoom;
+                                break;
+                            }
+                        }
+                    }
+                    if (movable != null) break;
+                    else
+                    {
+                        if (isWireSelected)
+                        {
+                            var t =  Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
+                            if (t.isExists)
+                            {
+                                VertexNumber = t.ExistingIndex;
+                            }
+                            else //создать новую опорную точку
+                            {
+
                             }
                         }
                     }
@@ -345,33 +349,20 @@ namespace SCS_Module
         }
         static public void MOVE(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             switch (Mode)
             {
                 case modeConnection.dragVertex:
-                    Schemes_Editor.wires[wireIndex].points[localSheet][pointNumber] = new Point( e.Location.X-5, e.Location.Y-5);
+                 //   Schemes_Editor.wires[wireIndex].points[localSheet][pointNumber] = new Point( e.Location.X-5, e.Location.Y-5);
                     break;
-                //case modeConnection.editWire:
-                //    pointNumber = -1; wireIndex = -1; double longest = double.MaxValue;
-                //    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
-                //    {
-                //        for (int j = 0; j < Schemes_Editor.wires[i].points[localSheet].Count; j++)
-                //        {
-                //            if(Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location) < longest && Schemes_Editor.distance(Schemes_Editor.wires[i].points[localSheet][j], e.Location)<20)
-                //            {
-                //                pointToSurroundWire = Schemes_Editor.wires[i].points[localSheet][j];
-                //                pointNumber = j;
-                //                wireIndex = i;
-                //            }
-                //        }
-                //    }
-
-                //    break;
                 case modeConnection.moveRoom:
                     movable.move(new Point(e.X - Prev.X, e.Y - Prev.Y), localSheet);
                     break;
 
                 case modeConnection.doNothing_NOSCALEMODE:
                     indexToSurround = -1;
+                    isRoomSelected = false;
+                    isWireSelected = false;
                     for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                     {
                         if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -389,6 +380,20 @@ namespace SCS_Module
                             {
                                 isRoomSelected = true;
                                 indexToSurround = i;
+                                break;
+                            }
+                        }
+                    }
+                    if (indexToSurround != -1 && isRoomSelected) break;
+                    else
+                    {
+                        for(int i=0;i< Schemes_Editor.wires.Count; i++)
+                        {
+                            selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
+                            if (ver.vertex.X != -1)
+                            {
+                                isWireSelected = true;
+                                SelectedWireIndex = i;
                                 break;
                             }
                         }
@@ -611,6 +616,7 @@ namespace SCS_Module
 
         static public void UP(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             isRoomSelected = false;
             switch (Mode)
             {
@@ -642,7 +648,7 @@ namespace SCS_Module
             }
         }
 
-
+       static Point mousePosition;
         static public void draw(bool isNeed = true)
         {
             try
@@ -656,22 +662,31 @@ namespace SCS_Module
                 foreach (var i in Schemes_Editor.rooms)
                     i.draw(Schemes_Editor.gr[localSheet], localSheet);
 
-                foreach (var i in Schemes_Editor.wires)
-                {
-                    if (Mode == modeConnection.dragVertex)
-                        i.draw(Schemes_Editor.gr[localSheet], localSheet, false);
-                    else
+                if (isWireSelected)
+                    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
+                    {
+                        if (SelectedWireIndex == i)
+                            Schemes_Editor.wires[i].draw(Schemes_Editor.gr[localSheet], localSheet, true);
+                        else
+                            Schemes_Editor.wires[i].draw(Schemes_Editor.gr[localSheet], localSheet);
+                    }
+                else
+                    foreach (var i in Schemes_Editor.wires)
                         i.draw(Schemes_Editor.gr[localSheet], localSheet);
-                }
+
 
                 switch (Mode)
                 {
-                    //case modeConnection.editWire:
-                    //    if (pointNumber != -1)
-                    //    {
-                    //        Schemes_Editor.gr[Schemes_Editor.sheetIndex].DrawEllipse(new Pen(Color.Red, 2), pointToSurroundWire.X - 5, pointToSurroundWire.Y - 5, 10, 10);
-                    //    }
-                    //    break;
+                    case modeConnection.buildConnection:
+                        if(targetWire!=null && targetWire.isFirstSeized)
+                        {
+                            Schemes_Editor.gr[localSheet].DrawLine(Pens.Red,
+                                new Point(targetWire.firstEquip.locations[localSheet].X + targetWire.firstEquip.scales[localSheet].X/2,
+                                targetWire.firstEquip.locations[localSheet].Y + targetWire.firstEquip.scales[localSheet].Y/2),
+
+                                mousePosition);
+                        }
+                        break;
                     case modeConnection.doNothing_NOSCALEMODE:
                         if (indexToSurround != -1)
                         {

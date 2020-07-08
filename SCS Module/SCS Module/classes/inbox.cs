@@ -12,7 +12,7 @@ namespace SCS_Module
         public string boxLabel = "не задано", conLabel = "не задано", strLabel = "не задано";
         public List<int> seized = new List<int>();
         public bool isShowingOnConnectionScheme = true;
-        public List<UsedInterface> listINterfaces = new List<UsedInterface>();
+    //    public List<UsedInterface> listINterfaces = new List<UsedInterface>();
         public bool inbox = false;
         public int numberOfUnits = -1;
         public override void move(Point offset, int scheme)
