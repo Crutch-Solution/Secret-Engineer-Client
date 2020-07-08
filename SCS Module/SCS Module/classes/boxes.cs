@@ -46,7 +46,7 @@ namespace SCS_Module
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
                 string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), f);
+                g.DrawString(roomName, new Font("Arial", 8), Brushes.DarkRed, new RectangleF(locations[scheme].X, locations[scheme].Y - 30, scales[scheme].X, 30), f);
 
             }
 
@@ -57,9 +57,9 @@ namespace SCS_Module
 
             Point lu = new Point(locations[scheme].X + scales[scheme].X + offs, locations[scheme].Y - offs);
             //heaader
-            g.DrawString("№ поз.", new Font("Arial", 8), Brushes.Black, new RectangleF(lu.X, lu.Y, one, 30), f);
-            g.DrawString("Наименование", new Font("Arial", 8), Brushes.Black, new RectangleF(lu.X + one, lu.Y, two, 30), f);
-            g.DrawString("Описание", new Font("Arial", 8), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y, three, 30), f);
+            g.DrawString("№ поз.", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y, one, 30), f);
+            g.DrawString("Наименование", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y, two, 30), f);
+            g.DrawString("Описание", new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y, three, 30), f);
             //lines
             for (int i = 0; i < equipInside.Count + 2; i++)
                 g.DrawLine(Pens.Black, lu.X, lu.Y + 30 * i, lu.X + one + two + three, lu.Y + 30 * i);

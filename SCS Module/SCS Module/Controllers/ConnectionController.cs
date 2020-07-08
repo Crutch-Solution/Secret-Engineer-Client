@@ -202,6 +202,30 @@ namespace SCS_Module
                         break;
                     case modeConnection.doNothing_NOSCALEMODE:
                         movable = null;
+
+                        if (isWireSelected)
+                        {
+                            var t = Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
+                            if (t.isExists)
+                            {
+                                VertexNumber = t.ExistingIndex;
+                                if (VertexNumber != -1)
+                                {
+                                    Mode = modeConnection.dragVertex;
+                                    movable = 1;
+                                }
+                            }
+                            else //создать новую опорную точку
+                            {
+                                VertexNumber = Schemes_Editor.wires[SelectedWireIndex].insertPoint(t.vertex, localSheet);
+                                if (VertexNumber != -1)
+                                {
+                                    Mode = modeConnection.dragVertex;
+                                    movable = 1;
+                                }
+                            }
+                        }
+                        if (movable != null) break;
                         for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                         {
                             if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -240,44 +264,16 @@ namespace SCS_Module
                             }
                         }
                         if (movable != null) break;
-                        else
+
+                        for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
                         {
-                            if (isWireSelected)
+                            if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
                             {
-                                var t = Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, e.Location);
-                                if (t.isExists)
-                                {
-                                    VertexNumber = t.ExistingIndex;
-                                    if (VertexNumber != -1)
-                                    {
-                                        Mode = modeConnection.dragVertex;
-                                        movable = 1;
-                                    }
-                                }
-                                else //создать новую опорную точку
-                                {
-                                    VertexNumber = Schemes_Editor.wires[SelectedWireIndex].insertPoint(t.vertex, localSheet);
-                                    if (VertexNumber != -1)
-                                    {
-                                        Mode = modeConnection.dragVertex;
-                                        movable = 1;
-                                    }
-                                }
-                            }    
-                        }
-                        if (movable != null) break;
-                        else
-                        {
-                            for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
-                            {
-                                if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
-                                {
-                                    isRoomSelected = true;
-                                    Prev = new Point(e.Location.X - Schemes_Editor.rooms[i].locations[localSheet].X, e.Location.Y - Schemes_Editor.rooms[i].locations[localSheet].Y);
-                                    movable = Schemes_Editor.rooms[i];
-                                    Mode = modeConnection.moveRoom;
-                                    break;
-                                }
+                                isRoomSelected = true;
+                                Prev = new Point(e.Location.X - Schemes_Editor.rooms[i].locations[localSheet].X, e.Location.Y - Schemes_Editor.rooms[i].locations[localSheet].Y);
+                                movable = Schemes_Editor.rooms[i];
+                                Mode = modeConnection.moveRoom;
+                                break;
                             }
                         }
                         break;
@@ -568,6 +564,19 @@ namespace SCS_Module
                         indexToSurround = -1;
                         isRoomSelected = false;
                         isWireSelected = false;
+
+                        for (int i = 0; i < Schemes_Editor.wires.Count; i++)
+                        {
+                            selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
+                            if (ver.vertex.X != -1)
+                            {
+                                isWireSelected = true;
+                                SelectedWireIndex = i;
+                                break;
+                            }
+                        }
+                        if (isWireSelected) break;
+
                         for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                         {
                             if (Schemes_Editor.mainWorkList[i].inside(e.Location, localSheet))
@@ -577,30 +586,16 @@ namespace SCS_Module
                             }
                         }
                         if (indexToSurround != -1) break;
-                        else
-                        {
-                            for (int i = 0; i < Schemes_Editor.wires.Count; i++)
-                            {
-                                selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
-                                if (ver.vertex.X != -1)
-                                {
-                                    isWireSelected = true;
-                                    SelectedWireIndex = i;
-                                    break;
-                                }
-                            }
-                        }
+
                         if (indexToSurround != -1 || isWireSelected) break;
-                        else
+
+                        for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
                         {
-                            for (int i = 0; i < Schemes_Editor.rooms.Count; i++)
+                            if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
                             {
-                                if (Schemes_Editor.rooms[i].inside(e.Location, localSheet))
-                                {
-                                    isRoomSelected = true;
-                                    indexToSurround = i;
-                                    break;
-                                }
+                                isRoomSelected = true;
+                                indexToSurround = i;
+                                break;
                             }
                         }
                         break;
@@ -974,6 +969,11 @@ namespace SCS_Module
                                 Schemes_Editor.gr[localSheet].DrawLine(Pens.Black, (int)(j[k].X + right), (iSimulator * 60) + j[k].Y + 20, (int)(j[k + 1].X + right), (iSimulator * 60) + j[k + 1].Y + 20);
                             }
                         }
+
+                        StringFormat f = new StringFormat();
+                        f.Alignment = StringAlignment.Center;
+                        f.LineAlignment = StringAlignment.Center;
+                        Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60)+50, 300, 50));
                         iSimulator++;
                     }
                 }

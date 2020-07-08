@@ -19,6 +19,16 @@ namespace SCS_Module
         public static int copy(Equipment target)
         {
             int id = -1;
+            ////
+            int max = int.MinValue;
+            foreach(var i in Schemes_Editor.mainWorkList)
+            {
+                if (i.localID > max)
+                    max = i.localID;
+            }
+            max++;
+            return max;
+            ////
             Transaction tr = null;
             try
             {

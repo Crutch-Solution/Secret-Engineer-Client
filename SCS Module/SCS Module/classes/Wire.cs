@@ -49,9 +49,9 @@ namespace SCS_Module
                 g.DrawLines(Pens.Blue, new Point[] { vinoska[index].startPoint, vinoska[index].vertex1, vinoska[index].vertex2 });
 
                 if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
-                    g.DrawString(vinoska[index].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30);
+                    g.DrawString(labels[index], new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30);
                 else
-                    g.DrawString(vinoska[index].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30);
+                    g.DrawString(labels[index], new Font("Arial", 14), Brushes.DarkGreen, vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30);
             }
             //foreach (var i in vertexes[index])
             //    g.DrawEllipse(Pens.Blue, i.X - 1, i.Y - 1, 2, 2);

@@ -74,8 +74,8 @@ namespace SCS_Module
             if (elem != null)
             {
                 var target = mainList.Find(x => x.id == elem.globalId);
-              
 
+               id =  RevitProvider.copy(target);
 
 
                 if (target.isBox)

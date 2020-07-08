@@ -88,9 +88,9 @@ namespace SCS_Module
             {
                 g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
                 if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
-                    g.DrawString(vinoska[localSheetIndex].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
                 else
-                    g.DrawString(vinoska[localSheetIndex].text, new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
             }
         }
 
