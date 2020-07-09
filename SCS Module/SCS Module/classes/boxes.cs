@@ -368,7 +368,7 @@ namespace SCS_Module
             }
             //мерная палка left doen start point
             lu = new Point(locations[scheme].X - 100, (int)(locations[scheme].Y + scales[scheme].Y - 30 - unitSize));
-            result += AutocadExport.drawLine(offsetConnection * 2+locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
+            result += AutocadExport.drawLine(offsetConnection * 2+locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, offsetConnection * 2 + locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
           //  g.DrawLine(Pens.Black, locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
             for (int i = 0; i < units; i++)
             {
@@ -403,10 +403,56 @@ namespace SCS_Module
 
         public override void drawStrExp(ref string result)
         {
-            int index = 3;
-            result += AutocadExport.drawrect(new Rectangle(offsetConnection * 3 + locations[index].X, locations[index].Y, scales[index].X, scales[index].Y));
-            result += AutocadExport.drawText(new RectangleF(offsetConnection * 3 + locations[index].X, locations[index].Y - 30, scales[index].X, 30), labels[index]);
-        }
+            int offsetConnection = 3000;
+            var target = Schemes_Editor.mainList.Find(x => x.id == globalId);
+            if (units == -1)
+                units = Convert.ToInt32(target.properties["Количество юнитов (шт)"]);
+            int i = 3;
+            //  g.DrawRectangle(Pens.Black, locations[i].X, locations[i].Y, scales[i].X, scales[i].Y);
+            //    g.DrawRectangle(Pens.Black, locations[i].X + 20, locations[i].Y + 30, scales[i].X - 40, scales[i].Y - 60);
+            // unitSize = (scales[i].Y - 60) / (units * 1.0f);
+            unitSize = 40;
+            scales[i] = new Point(scales[i].X, (int)(unitSize * equipInside.Count + 40));
+            result += AutocadExport.drawrect(new Rectangle(offsetConnection*3+ locations[i].X, locations[i].Y, scales[i].X, scales[i].Y));
+         //   g.DrawRectangle(Pens.Black, locations[i].X, locations[i].Y, scales[i].X, scales[i].Y);
+            for (int j = 0; j < equipInside.Count; j++)
+            {
+                //equipInside[j].locations[i] = new Point(locations[i].X + 20, (int)(locations[i].Y + 30 + positions[j] * unitSize));
+                //equipInside[j].scales[i] = new Point(scales[i].X - 40, (int)unitSize-30);////
+                equipInside[j].locations[i] = new Point(locations[i].X + 20, (int)(locations[i].Y + 20 + j * unitSize));
+                equipInside[j].scales[i] = new Point(scales[i].X - 40, (int)unitSize - 20);////
+
+            }
+
+            if (equipInside.Count > 1)
+            {
+                for (int j = 1; j < equipInside.Count; j++)
+                {
+                    result += AutocadExport.drawLine(offsetConnection * 3 + locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + unitSize * j - 18, offsetConnection * 3 + locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 2));
+                    result += AutocadExport.drawLine(offsetConnection * 3 + locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + (unitSize) * j - 2, offsetConnection * 3 + locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 18));
+                    //g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + unitSize * j - 18, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 2));
+                    //g.DrawLine(new Pen(Color.Blue, 3), locations[i].X + scales[i].X / 2 - 13, locations[i].Y + 20 + (unitSize) * j - 2, locations[i].X + scales[i].X / 2 + 13, locations[i].Y + 20 + (unitSize * j - 18));
+                }
+            }
+
+            //по надписи
+            StringFormat f = new StringFormat();
+            f.Alignment = StringAlignment.Center;
+            //найти название
+            if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
+            {
+                //     string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                result += AutocadExport.drawText(new RectangleF(offsetConnection * 3 + locations[i].X, locations[i].Y - 30, scales[i].X, 30), labels[i]);
+                //g.DrawString(labels[i], new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[i].X, locations[i].Y - 30, scales[i].X, 30), f);
+
+            }
+
+
+
+
+
+
+            }
 
         public override void rebuildVinosku(int a)
         {

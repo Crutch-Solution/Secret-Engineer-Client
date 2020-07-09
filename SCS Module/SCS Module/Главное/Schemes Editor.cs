@@ -464,6 +464,7 @@ namespace SCS_Module
             foreach (var i in rooms)
                 for (int j = 0; j < 4; j++)
                     i.drawExp(ref result, j);
+            ConnectionController.ExportUGO(ref result);
             SaveFileDialog file = new SaveFileDialog();
             file.Filter = "Script files (*.scr)|*.scr";
             if(file.ShowDialog() == DialogResult.OK)

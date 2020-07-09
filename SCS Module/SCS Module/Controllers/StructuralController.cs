@@ -147,6 +147,7 @@ namespace SCS_Module
         }
         static public void DOWN(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             if (e.Button == MouseButtons.Right)
             {
                 movable = null;
@@ -354,6 +355,7 @@ namespace SCS_Module
         }
         static public void MOVE(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             switch (Mode)
             {
 
@@ -365,6 +367,20 @@ namespace SCS_Module
                     break;
                 case modeStruct.doNothing_NOSCALEMODE:
                     indexToSurround = -1;
+                    isRoomSelected = false;
+                    isWireSelected = false;
+
+                    for (int i = 0; i < Schemes_Editor.wires.Count; i++)
+                    {
+                        selectedVertex ver = Schemes_Editor.wires[i].inside(localSheet, e.Location);
+                        if (ver.vertex.X != -1)
+                        {
+                            isWireSelected = true;
+                            SelectedWireIndex = i;
+                            break;
+                        }
+                    }
+                    if (isWireSelected) break;
                     for (int i = Schemes_Editor.mainWorkList.Count - 1; i > -1; i--)
                     {
                         if (Schemes_Editor.mainWorkList[i] is inboxes) continue;
@@ -545,6 +561,7 @@ namespace SCS_Module
 
         static public void UP(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Location;
             isRoomSelected = false;
             switch (Mode)
             {

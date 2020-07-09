@@ -1094,7 +1094,7 @@ namespace SCS_Module
                     f.Alignment = StringAlignment.Center;
                     f.LineAlignment = StringAlignment.Center;
                     result += AutocadExport.drawText(new RectangleF(offsetConnection+(float)right + 60, (iSimulator * 60) + 20, 300, 50), i.description);
-                    Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60) + 20, 300, 50));
+                //    Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60) + 20, 300, 50));
                     iSimulator++;
                 }
             }
