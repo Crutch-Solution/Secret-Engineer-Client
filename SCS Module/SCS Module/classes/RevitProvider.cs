@@ -20,15 +20,6 @@ namespace SCS_Module
         {
             int id = -1;
             ////
-            int max = int.MinValue;
-            foreach(var i in Schemes_Editor.mainWorkList)
-            {
-                if (i.localID > max)
-                    max = i.localID;
-            }
-            max++;
-            return max;
-            ////
             Transaction tr = null;
             try
             {
@@ -68,12 +59,24 @@ namespace SCS_Module
                 {
                 }
             }
+            if(id == -1)
+            {
+                id = -1;
+                ////
+                int max = int.MinValue;
+                foreach (var i in Schemes_Editor.mainWorkList)
+                {
+                    if (i.localID > max)
+                        max = i.localID;
+                }
+                max++;
+                return max;
+            }
             return id;
 
         }
         public static void synchronizer()
         {
-            return;
             string a = "";
             Transaction tr = null;
             try
@@ -83,7 +86,6 @@ namespace SCS_Module
                 tr.Start("My Super trans");
                 for (int i = 0; i < Schemes_Editor.mainWorkList.Count; i++)
                 {
-
 
                     Element el = doc.GetElement(new ElementId(Schemes_Editor.mainWorkList[i].localID));
                     if (el == null)
@@ -121,8 +123,6 @@ namespace SCS_Module
         static int shit = 0;
         public static int createInstance(byte[] bytes, string familyname)
         {
-            shit++;
-            return shit;
             Transaction tr = null;
             int id = -1;
             try

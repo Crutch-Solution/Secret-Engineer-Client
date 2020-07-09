@@ -485,7 +485,29 @@ namespace SCS_Module
 
                         break;
                     case "Копировать":
+                        int id = RevitProvider.copy(Schemes_Editor.mainList.Find(x => x.id == movable.globalId));
+                        if(movable is inboxes)
+                        {
+                            Schemes_Editor.mainWorkList.Add(new inboxes()
+                            {
+                                numberOfUnits = Convert.ToInt32(movable.properties["Занимаемых юнитов (шт)"]),
+                                localID = id,
+                                globalId = movable.globalId,
+                                locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
+                                scales = new List<Point>(movable.scales).ToArray()
+                            });
+                        }
+                        if(movable is free)
+                        {
+                            Schemes_Editor.mainWorkList.Add(new free()
+                            {
+                                localID = id,
+                                globalId = movable.globalId,
+                                locations = new Point[] { new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0) },
+                                scales = new List<Point>(movable.scales).ToArray()
+                            });
 
+                        }
                         break;
                     case "Удалить":
                         foreach (Wire i in Schemes_Editor.wires)
@@ -551,12 +573,12 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
                         Schemes_Editor.wires[SelectedWireIndex].createVinosku(Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, mousePosition).vertex, localSheet);
-                        element = Schemes_Editor.wires[SelectedWireIndex];
+                        movable = Schemes_Editor.wires[SelectedWireIndex];
                         Mode = modeConnection.moveVinosku;
                         break;
                     case "Копировать":
@@ -609,7 +631,6 @@ namespace SCS_Module
             }
 
         }
-        static dynamic element;
         static public void MOVE(object sender, MouseEventArgs e)
         {
             try
@@ -618,15 +639,15 @@ namespace SCS_Module
                 switch (Mode)
                 {
                     case modeConnection.moveVinosku:
-                        float distt = Math.Abs(element.vinoska[localSheet].vertex1.X - element.vinoska[localSheet].vertex2.X);
-                        element.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
-                        element.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
+                        float distt = Math.Abs(movable.vinoska[localSheet].vertex1.X - movable.vinoska[localSheet].vertex2.X);
+                        movable.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
+                        movable.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
 
-                        if (element.vinoska[localSheet].vertex2.X < element.vinoska[localSheet].startPoint.X)
+                        if (movable.vinoska[localSheet].vertex2.X < movable.vinoska[localSheet].startPoint.X)
                         {
-                            Point t = element.vinoska[localSheet].vertex1;
-                            element.vinoska[localSheet].vertex1 = element.vinoska[localSheet].vertex2;
-                            element.vinoska[localSheet].vertex2 = t;
+                            Point t = movable.vinoska[localSheet].vertex1;
+                            movable.vinoska[localSheet].vertex1 = movable.vinoska[localSheet].vertex2;
+                            movable.vinoska[localSheet].vertex2 = t;
                         }
                         break;
 

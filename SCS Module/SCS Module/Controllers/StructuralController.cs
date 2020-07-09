@@ -40,7 +40,6 @@ namespace SCS_Module
         public static bool isWireSelected = false, isDrawSelected = false;
         public static int SelectedWireIndex;
         public static int VertexNumber;
-        static dynamic element;
         static Point mousePosition;
         //
         //Для перетаскивания
@@ -113,12 +112,12 @@ namespace SCS_Module
                         RoomCreator cr = new RoomCreator();
                         if (cr.ShowDialog() == DialogResult.OK)
                         {
-                            element.labels[localSheet] = cr.roomName;
+                            movable.labels[localSheet] = cr.roomName;
                         }
                         break;
                     case "Добавить выноску":
                         Schemes_Editor.wires[SelectedWireIndex].createVinosku(Schemes_Editor.wires[SelectedWireIndex].inside(localSheet, mousePosition).vertex, localSheet);
-                        element = Schemes_Editor.wires[SelectedWireIndex];
+                        movable = Schemes_Editor.wires[SelectedWireIndex];
                         Mode = modeStruct.moveVinosku;
                         break;
 
@@ -358,6 +357,18 @@ namespace SCS_Module
             mousePosition = e.Location;
             switch (Mode)
             {
+                case modeStruct.moveVinosku:
+                    float distt = Math.Abs(movable.vinoska[localSheet].vertex1.X - movable.vinoska[localSheet].vertex2.X);
+                    movable.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
+                    movable.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
+
+                    if (movable.vinoska[localSheet].vertex2.X < movable.vinoska[localSheet].startPoint.X)
+                    {
+                        Point t = movable.vinoska[localSheet].vertex1;
+                        movable.vinoska[localSheet].vertex1 = movable.vinoska[localSheet].vertex2;
+                        movable.vinoska[localSheet].vertex2 = t;
+                    }
+                    break;
 
                 case modeStruct.dragVertex:
                     Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X, e.Location.Y);
@@ -565,6 +576,9 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
+                case modeStruct.moveVinosku:
+                    Mode = modeStruct.doNothing_NOSCALEMODE;
+                    break;
                 case modeStruct.dragVertex:
                     Mode = modeStruct.doNothing_NOSCALEMODE;
                     break;

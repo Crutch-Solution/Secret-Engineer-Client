@@ -207,11 +207,10 @@ namespace SCS_Module
 
             StringFormat f = new StringFormat();
             f.Alignment = StringAlignment.Center;
-            f.LineAlignment = StringAlignment.Center;
             //найти название
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
-                g.DrawString(labels[localSheetIndex], new Font("Arial", 7), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y));
+                g.DrawString(labels[localSheetIndex], new Font("Arial", 7), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y, scales[localSheetIndex].X, scales[localSheetIndex].Y), f);
 
             }
 
@@ -295,6 +294,11 @@ namespace SCS_Module
 
         public override void drawBoxExp(ref string result)
         {
+            if (labels == null)
+            {
+                string name = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                labels = new string[] { name, name, name, name };
+            }
             int localSheetIndex = 2;
             List<Equipment.VectorPic> list = new List<Equipment.VectorPic>();
             if (Schemes_Editor.mainList.Find(x => x.id == globalId).inPlacementScheme != null)
@@ -331,16 +335,46 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        result += AutocadExport.drawLine(offsetConnection*2+locations[localSheetIndex].X+j[k].X, locations[localSheetIndex].Y + j[k].Y, offsetConnection * 2 + locations[localSheetIndex].X + j[k+1].X, locations[localSheetIndex].Y + j[k+1].Y);
-                    //    result += $"pline {j[k].X + locations[localSheetIndex].X},{-j[k].Y - locations[localSheetIndex].Y} {j[k + 1].X + locations[localSheetIndex].X},{-j[k + 1].Y - locations[localSheetIndex].Y} \r\n";
-                        // g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        result += AutocadExport.drawLine(offsetConnection*2+j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, offsetConnection * 3 + j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        //g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }
             }
-            if (vinoska != null)
+            if (vinoska != null && vinoska[localSheetIndex] != null)
             {
-                //g.DrawLines(Pens.Blue, new Point[] { vinoska.startPoint, vinoska.vertex1, vinoska.vertex2 });
-                //g.DrawString(vinoska.text, new Font("Arial", 14), Brushes.DarkGreen, vinoska.vertex1.X, vinoska.vertex1.Y - 30);
+                if (localSheetIndex == 2 && inbox)
+                {
+                    int index = 0;
+                    //найти коробку в которой он
+                    foreach (boxes i in Schemes_Editor.mainWorkList.Where(x => x is boxes))
+                    {
+                        int founded = i.equipInside.FindIndex(x => x.localID == localID);
+                        if (founded != -1)
+                        {
+                            index = i.positions[founded] + 1;
+                            break;
+                        }
+                    }
+                    result += AutocadExport.drawLine(new Point(offsetConnection * 2 + vinoska[localSheetIndex].startPoint.X, vinoska[localSheetIndex].startPoint.Y), new Point(offsetConnection * 3+ vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y));
+                    //   g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
+                    if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
+                        result += AutocadExport.drawText(offsetConnection * 2+vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30, 50,30, index.ToString());
+                     //   g.DrawString(index.ToString(), new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    else
+                        result += AutocadExport.drawText(offsetConnection * 2+vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30, 50, 30, index.ToString());
+                 //   g.DrawString(index.ToString(), new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                }
+                else
+                {
+                    result += AutocadExport.drawLine(new Point(offsetConnection * 2+ vinoska[localSheetIndex].startPoint.X, vinoska[localSheetIndex].startPoint.Y), new Point(offsetConnection * 3 + vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y));
+                 //   g.DrawLines(Pens.Blue, new Point[] { vinoska[localSheetIndex].startPoint, vinoska[localSheetIndex].vertex1, vinoska[localSheetIndex].vertex2 });
+                    if (vinoska[localSheetIndex].vertex1.X < vinoska[localSheetIndex].vertex2.X)
+                        result += AutocadExport.drawText(offsetConnection * 2 + vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30, 50, 30, labels[localSheetIndex]);
+                   // g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex1.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                    else
+                                            result += AutocadExport.drawText(offsetConnection * 2 + vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30, 50, 30, labels[localSheetIndex]);
+                   // g.DrawString(labels[localSheetIndex], new Font("Arial", 14), Brushes.DarkGreen, vinoska[localSheetIndex].vertex2.X, vinoska[localSheetIndex].vertex1.Y - 30);
+                }
             }
         }
 

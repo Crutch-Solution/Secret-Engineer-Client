@@ -360,6 +360,18 @@ namespace SCS_Module
             mousePosition = e.Location;
             switch (Mode)
             {
+                case modePlacement.moveVinosku:
+                    float distt = Math.Abs(movable.vinoska[localSheet].vertex1.X - movable.vinoska[localSheet].vertex2.X);
+                    movable.vinoska[localSheet].vertex1 = new Point((int)(e.Location.X - distt / 2.0f), e.Location.Y);
+                    movable.vinoska[localSheet].vertex2 = new Point((int)(e.Location.X + distt / 2.0f), e.Location.Y);
+
+                    if (movable.vinoska[localSheet].vertex2.X < movable.vinoska[localSheet].startPoint.X)
+                    {
+                        Point t = movable.vinoska[localSheet].vertex1;
+                        movable.vinoska[localSheet].vertex1 = movable.vinoska[localSheet].vertex2;
+                        movable.vinoska[localSheet].vertex2 = t;
+                    }
+                    break;
                 case modePlacement.dragVertex:
                     Schemes_Editor.wires[SelectedWireIndex].points[localSheet][VertexNumber] = new Point(e.Location.X, e.Location.Y);
                     break;
@@ -558,6 +570,9 @@ namespace SCS_Module
             isRoomSelected = false;
             switch (Mode)
             {
+                case modePlacement.moveVinosku:
+                    Mode = modePlacement.doNothing_NOSCALEMODE;
+                    break;
                 case modePlacement.dragVertex:
                     Mode = modePlacement.doNothing_NOSCALEMODE;
                     break;

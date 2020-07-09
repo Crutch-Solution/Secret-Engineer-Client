@@ -35,7 +35,11 @@ namespace SCS_Module
             if (seized.Count == 0)
                 foreach (var i in Schemes_Editor.mainList.Find(x => x.id == globalId).compatibilities)
                     seized.Add(0);
-
+            if(labels == null)
+            {
+                string a = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
+                labels = new string[] { a, a, a, a };
+            }
 
             int localSheetIndex = 1;
             List<Equipment.VectorPic> list = new List<Equipment.VectorPic>();

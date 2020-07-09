@@ -29,15 +29,15 @@ namespace SCS_Module
         {
           
             RibbonPanel p = fff(application);
-            PushButton but = p.AddItem(new PushButtonData("hui", "name", Assembly.GetExecutingAssembly().Location, "hui.comm")) as PushButton;
+            PushButton but = p.AddItem(new PushButtonData("XXX", "name", Assembly.GetExecutingAssembly().Location, "X")) as PushButton;
             return Result.Succeeded;
         }
 
         public RibbonPanel fff(UIControlledApplication a)
         {
-            a.CreateRibbonPanel("Пезда тоби ревит");
+            a.CreateRibbonPanel("XXXX");
             foreach (var i in a.GetRibbonPanels())
-                if (i.Name == "Пезда тоби ревит")
+                if (i.Name == "XXXXXXXXXXт")
                     return i;
             return null;
         }
