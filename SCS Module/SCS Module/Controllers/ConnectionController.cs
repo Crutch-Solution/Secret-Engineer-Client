@@ -1051,5 +1051,53 @@ namespace SCS_Module
             }
             catch (Exception exp) { }
         }
+
+
+        static public void ExportUGO(ref string result)
+        {
+            double right = 0;
+            foreach (var i in Schemes_Editor.mainWorkList)
+            {
+                Equipment.VectorPic pic = Schemes_Editor.mainList.Find(x => x.id == i.globalId).inConnectionScheme;
+                if (i.locations[localSheet].X + i.scales[localSheet].X > right)
+                    right = i.locations[localSheet].X + i.scales[localSheet].X;
+            }
+            right += 100;
+            //рисуем УГОШКИ
+            int iSimulator = 0;
+            int offsetConnection = 3000;
+            if (Schemes_Editor.mainWorkList.Exists(x => !(x is boxes)))
+            {
+                foreach (var i in Schemes_Editor.mainList)
+                {
+                    if (i.inConnectionScheme == null) continue;
+                    var h = i.inConnectionScheme.copy();
+                    Equipment.Point WidthHeight = h.GetProp();
+                    float Xprop = WidthHeight.X / (50 * 1.0f),
+                        Yprop = WidthHeight.Y / (50 * 1.0f);
+                    h.divide(Xprop, Yprop);
+
+
+                    //foreach (var j in h.circles)
+                    //    Schemes_Editor.gr[localSheet].DrawEllipse(Pens.Black, (int)(right + (float)j.center.X - (float)j.radiusX), (iSimulator * 60) + 20 + (float)j.center.Y - (float)j.radiusY, (float)j.radiusX * 2, (float)j.radiusY * 2);
+
+                    foreach (var j in h.polyLines)
+                    {
+                        for (int k = 0; k < j.Count - 1; k++)
+                        {
+                            result += AutocadExport.drawLine((int)(offsetConnection+j[k].X + right), (iSimulator * 60) + j[k].Y + 20, (int)(offsetConnection+j[k + 1].X + right), (iSimulator * 60) + j[k + 1].Y + 20);
+                        //    Schemes_Editor.gr[localSheet].DrawLine(Pens.Black, (int)(j[k].X + right), (iSimulator * 60) + j[k].Y + 20, (int)(j[k + 1].X + right), (iSimulator * 60) + j[k + 1].Y + 20);
+                        }
+                    }
+
+                    StringFormat f = new StringFormat();
+                    f.Alignment = StringAlignment.Center;
+                    f.LineAlignment = StringAlignment.Center;
+                    result += AutocadExport.drawText(new RectangleF(offsetConnection+(float)right + 60, (iSimulator * 60) + 20, 300, 50), i.description);
+                    Schemes_Editor.gr[localSheet].DrawString(i.description, new Font("Arial", 7), Brushes.Black, new RectangleF((float)right + 60, (iSimulator * 60) + 20, 300, 50));
+                    iSimulator++;
+                }
+            }
+        }
     }
 }

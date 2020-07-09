@@ -89,8 +89,8 @@ namespace SCS_Module
                 g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
             }
             //мерная палка left doen start point
-            lu = new Point(locations[scheme].X - 20,(int)( locations[scheme].Y + scales[scheme].Y - 30-unitSize));
-            g.DrawLine(Pens.Black, locations[scheme].X - 20, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 5, locations[scheme].Y + scales[scheme].Y - 30);
+            lu = new Point(locations[scheme].X - 100,(int)( locations[scheme].Y + scales[scheme].Y - 30-unitSize));
+            g.DrawLine(Pens.Black, locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
             for (int i = 0; i < units; i++)
             {
                 g.DrawRectangle(Pens.Black, lu.X, lu.Y - unitSize * i, 3, unitSize);
@@ -100,7 +100,7 @@ namespace SCS_Module
                     g.DrawString((i + 1).ToString(), new Font("Arial", 7), Brushes.Black, lu.X + 4, lu.Y - unitSize * i);
                 }
             }
-            g.DrawLine(Pens.Black, locations[scheme].X - 20, locations[scheme].Y + scales[scheme].Y - 30-unitSize*units, locations[scheme].X - 5, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units);
+            g.DrawLine(Pens.Black, locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30-unitSize*units, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units);
         }
 
         public override void drawStr(Graphics g)
@@ -361,16 +361,33 @@ namespace SCS_Module
 
             for (int i = 1; i < equipInside.Count + 1; i++)
             {
-                result += AutocadExport.drawText(offsetConnection * 2 + lu.X, lu.Y + i*heigth, one, heigth, i.ToString());
+                result += AutocadExport.drawText(offsetConnection * 2 + lu.X, lu.Y + i * heigth, one, heigth, i.ToString());
                 result += AutocadExport.drawText(offsetConnection * 2 + lu.X + one, lu.Y + i * heigth, two, heigth, equipInside[i - 1].labels[scheme]);
                 result += AutocadExport.drawText(offsetConnection * 2 + lu.X + one + two, lu.Y + i * heigth, three, heigth, Schemes_Editor.mainList.Find(x => x.id == equipInside[i - 1].globalId).description);
 
-
-
-                //    g.DrawString(j.ToString(), new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y + 30 * i, one, 30), f);
-                //    g.DrawString(equipInside[j - 1].boxLabel, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
-                //    g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[j - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
             }
+            //мерная палка left doen start point
+            lu = new Point(locations[scheme].X - 100, (int)(locations[scheme].Y + scales[scheme].Y - 30 - unitSize));
+            result += AutocadExport.drawLine(offsetConnection * 2+locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
+          //  g.DrawLine(Pens.Black, locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30);
+            for (int i = 0; i < units; i++)
+            {
+                result += AutocadExport.drawrect(new Rectangle(offsetConnection * 2 + lu.X, (int)(lu.Y - unitSize * i), 3, (int)unitSize));
+             //   g.DrawRectangle(Pens.Black, lu.X, lu.Y - unitSize * i, 3, unitSize);
+                if ((i + 1) % 5 == 0)
+                {
+                    result += AutocadExport.drawText(new RectangleF(offsetConnection * 2 + lu.X + 4, lu.Y - unitSize * i,30,20), (i + 1).ToString());
+                   // g.DrawString((i + 1).ToString(), new Font("Arial", 7), Brushes.Black, lu.X + 4, lu.Y - unitSize * i);
+                }
+            }
+            result += AutocadExport.drawLine(offsetConnection * 2+locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units, offsetConnection * 2+locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units);
+            //g.DrawLine(Pens.Black, locations[scheme].X - 100, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units, locations[scheme].X - 80, locations[scheme].Y + scales[scheme].Y - 30 - unitSize * units);
+
+
+            //    g.DrawString(j.ToString(), new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X, lu.Y + 30 * i, one, 30), f);
+            //    g.DrawString(equipInside[j - 1].boxLabel, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one, lu.Y + 30 * i, two, 30), f);
+            //    g.DrawString(Schemes_Editor.mainList.Find(x => x.id == equipInside[j - 1].globalId).description, new Font("Arial", 7), Brushes.Black, new RectangleF(lu.X + one + two, lu.Y + 30 * i, three, 30), f);
+
             //int num = 1;
             //foreach (var j in equipInside)
             //{

@@ -12,13 +12,13 @@ namespace SCS_Module
         static public string drawLine(Point a, Point b)
         {
             string result = "";
-            result = $"pline {a.X},{-a.Y} {b.X},{b.Y} \r\n";
+            result = $"pline {a.X},{-a.Y} {b.X},{-b.Y} \r\n";
             return result;
         }
         static public string drawLine(Equipment.Point a, Equipment.Point b)
         {
             string result = "";
-            result = $"pline {a.X},{-a.Y} {b.X},{b.Y} \r\n";
+            result = $"pline {a.X},{-a.Y} {b.X},{-b.Y} \r\n";
             return result;
         }
         static public string drawLine(float x1, float y1, float x2, float y2)
