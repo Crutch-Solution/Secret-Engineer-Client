@@ -9,6 +9,7 @@ namespace SCS_Module
 {
     public class Room
     {
+        int offsetConnection = 3000;
         public Rectangle[] locations = new Rectangle[] { new Rectangle(0, 0, 200, 200), new Rectangle(0, 0, 200, 200), new Rectangle(), new System.Drawing.Rectangle(0, 0, 200, 200) };
         public string[] labels = null;
         public void move(Point a, int index)
@@ -18,8 +19,8 @@ namespace SCS_Module
         public void drawExp(ref string a, int index)
         {
             if (index == 2) return;
-            a += AutocadExport.drawrect(locations[index]);
-            a += AutocadExport.drawText(new RectangleF(locations[index].X, locations[index].Y - 30, locations[index].Width, 30), labels[index]);
+            a += AutocadExport.drawrect(new Rectangle(locations[index].X+ offsetConnection*index, locations[index].Y, locations[index].Width, locations[index].Height));
+            a += AutocadExport.drawText(new RectangleF(locations[index].X + offsetConnection * index, locations[index].Y - 30, locations[index].Width, 30), labels[index]);
         }
         public void draw(Graphics g, int index)
         {

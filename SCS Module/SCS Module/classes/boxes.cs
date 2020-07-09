@@ -8,7 +8,7 @@ namespace SCS_Module
 {
     public class boxes : drawer
     {
-        int offsetConnection = 1000;
+        int offsetConnection = 3000;
 
 
         public int units = -1;

@@ -9,6 +9,8 @@ namespace SCS_Module
 {
     public class Wire
     {
+        int offsetConnection = 3000;
+
         public string[] labels = null;
 
         public Vinoska[] vinoska = new Vinoska[] { null,null,null,null};
@@ -50,17 +52,17 @@ namespace SCS_Module
             int index = 1;
             if (points.Count < 2) return;
             for (int i = 0; i < points[index].Count - 1; i++)
-                a += AutocadExport.drawLine(points[index][i], points[index][i + 1]);
+                a += AutocadExport.drawLine(new Point(points[index][i].X+ offsetConnection, points[index][i].Y), new Point(points[index][i + 1].X+offsetConnection, points[index][i+1].Y));
 
             if (vinoska != null && vinoska[index] != null)
             {
-                a += AutocadExport.drawLine(vinoska[index].startPoint, vinoska[index].vertex1);
-                a += AutocadExport.drawLine(vinoska[index].vertex1, vinoska[index].vertex2);
+                a += AutocadExport.drawLine(new Point( vinoska[index].startPoint.X+offsetConnection, vinoska[index].startPoint.Y), new Point(vinoska[index].vertex1.X+offsetConnection, vinoska[index].vertex1.Y));
+                a += AutocadExport.drawLine(new Point(vinoska[index].vertex1.X+offsetConnection, vinoska[index].vertex1.Y), new Point( vinoska[index].vertex2.X+offsetConnection, vinoska[index].vertex2.Y ));
 
                 if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
-                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X+offsetConnection, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
                 else
-                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X + offsetConnection, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
 
             }
         }
@@ -73,17 +75,17 @@ namespace SCS_Module
             int index = 3;
             if (points.Count < 2) return;
             for (int i = 0; i < points[index].Count - 1; i++)
-                a += AutocadExport.drawLine(points[index][i], points[index][i + 1]);
+                a += AutocadExport.drawLine(new Point(points[index][i].X + offsetConnection*3, points[index][i].Y), new Point(points[index][i + 1].X + offsetConnection * 3, points[index][i + 1].Y));
 
             if (vinoska != null && vinoska[index] != null)
             {
-                a += AutocadExport.drawLine(vinoska[index].startPoint, vinoska[index].vertex1);
-                a += AutocadExport.drawLine(vinoska[index].vertex1, vinoska[index].vertex2);
+                a += AutocadExport.drawLine(new Point(vinoska[index].startPoint.X + offsetConnection * 3, vinoska[index].startPoint.Y), new Point(vinoska[index].vertex1.X + offsetConnection*3, vinoska[index].vertex1.Y));
+                a += AutocadExport.drawLine(new Point(vinoska[index].vertex1.X + offsetConnection * 3, vinoska[index].vertex1.Y), new Point(vinoska[index].vertex2.X + offsetConnection * 3, vinoska[index].vertex2.Y));
 
                 if (vinoska[index].vertex1.X < vinoska[index].vertex2.X)
-                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex1.X + offsetConnection*3, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
                 else
-                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
+                    a += AutocadExport.drawText(new RectangleF(vinoska[index].vertex2.X + offsetConnection*3, vinoska[index].vertex1.Y - 30, 100, 30), labels[index]);
 
             }
         }

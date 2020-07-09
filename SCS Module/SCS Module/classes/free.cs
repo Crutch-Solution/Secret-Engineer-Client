@@ -8,6 +8,11 @@ namespace SCS_Module
 {
     public class free : drawer
     {
+        int offsetConnection = 3000;
+
+
+
+
         public List<int> seized = new List<int>();
         public override void createVinosku(int index)
         {
@@ -130,7 +135,7 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        result += AutocadExport.drawLine(j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        result += AutocadExport.drawLine(offsetConnection+j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, offsetConnection+j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                         //g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }
@@ -142,7 +147,7 @@ namespace SCS_Module
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
                 string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                result += AutocadExport.drawText(new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), roomName);
+                result += AutocadExport.drawText(new RectangleF(offsetConnection+locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), roomName);
           //      g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
 
             }
@@ -350,7 +355,7 @@ namespace SCS_Module
                 {
                     for (int k = 0; k < j.Count - 1; k++)
                     {
-                        result += AutocadExport.drawLine(j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
+                        result += AutocadExport.drawLine(offsetConnection*3+j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, offsetConnection * 3 + j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                         //g.DrawLine(Pens.Black, j[k].X + locations[localSheetIndex].X, j[k].Y + locations[localSheetIndex].Y, j[k + 1].X + locations[localSheetIndex].X, j[k + 1].Y + locations[localSheetIndex].Y);
                     }
                 }
@@ -362,7 +367,7 @@ namespace SCS_Module
             if (Schemes_Editor.mainList.Find(x => x.id == globalId) != null)
             {
                 string roomName = Schemes_Editor.mainList.Find(x => x.id == globalId).name;
-                result += AutocadExport.drawText(new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), roomName);
+                result += AutocadExport.drawText(new RectangleF(offsetConnection * 3 + locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), roomName);
              //   g.DrawString(roomName, new Font("Arial", 10), Brushes.DarkRed, new RectangleF(locations[localSheetIndex].X, locations[localSheetIndex].Y - 30, scales[localSheetIndex].X, 30), f);
 
             }
